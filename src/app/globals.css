@@ -1,0 +1,132 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  /* Brand palette — Amaya Rada */
+  --color-lavender-veil: #e8d7f1;
+  --color-thistle: #d3bccc;
+  --color-vintage-lavender: #a167a5;
+  --color-indigo-velvet: #4a306d;
+  --color-deep-space: #0e273c;
+
+  /* Fonts (injected via next/font) */
+  --font-sans: var(--font-poppins);
+  --font-serif: var(--font-playfair);
+
+  /* Radius */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  /* shadcn semantic tokens */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+:root {
+  --radius: 0.625rem;
+
+  /* Light mode — fondos claros lavanda, primario púrpura profundo */
+  --background: #f9f5fc;           /* ligeramente lavanda, no blanco puro */
+  --foreground: #0e273c;           /* deep-space para texto */
+  --card: #ffffff;
+  --card-foreground: #0e273c;
+  --popover: #ffffff;
+  --popover-foreground: #0e273c;
+  --primary: #4a306d;              /* indigo-velvet — botón principal */
+  --primary-foreground: #f9f5fc;
+  --secondary: #e8d7f1;            /* lavender-veil — botón secundario */
+  --secondary-foreground: #4a306d;
+  --muted: #f0e8f6;
+  --muted-foreground: #6b5a7a;
+  --accent: #a167a5;               /* vintage-lavender — badges, links activos */
+  --accent-foreground: #ffffff;
+  --destructive: #b91c1c;
+  --destructive-foreground: #ffffff;
+  --border: #d3bccc;               /* thistle — bordes suaves */
+  --input: #d3bccc;
+  --ring: #a167a5;
+}
+
+.dark {
+  --background: #0e273c;           /* deep-space como fondo oscuro */
+  --foreground: #e8d7f1;           /* lavender-veil para texto */
+  --card: #1a3650;
+  --card-foreground: #e8d7f1;
+  --popover: #1a3650;
+  --popover-foreground: #e8d7f1;
+  --primary: #a167a5;              /* vintage-lavender como primario en dark */
+  --primary-foreground: #ffffff;
+  --secondary: #4a306d;
+  --secondary-foreground: #e8d7f1;
+  --muted: #1a3650;
+  --muted-foreground: #d3bccc;
+  --accent: #a167a5;
+  --accent-foreground: #ffffff;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #4a306d;
+  --input: #4a306d;
+  --ring: #a167a5;
+}
+
+/* react-day-picker — adaptar colores a paleta Amaya Rada */
+.rdp-root {
+  --rdp-accent-color: #a167a5;           /* vintage-lavender */
+  --rdp-accent-background-color: #e8d7f1; /* lavender-veil */
+  --rdp-day-font: var(--font-poppins, system-ui);
+  --rdp-day-height: 2.25rem;
+  --rdp-day-width: 2.25rem;
+  --rdp-range_middle-background-color: #f0e8f6;
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans), system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-serif), Georgia, serif;
+    letter-spacing: -0.01em;
+    color: var(--foreground);
+  }
+
+  /* Focus visible accesible */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+}

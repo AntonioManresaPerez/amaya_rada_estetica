@@ -14,9 +14,9 @@ export async function POST(req: NextRequest) {
     const docType = body?._type as string | undefined;
 
     if (docType && TAGS.includes(docType)) {
-      revalidateTag(docType);
+      revalidateTag(docType, "default");
     } else {
-      TAGS.forEach((tag) => revalidateTag(tag));
+      TAGS.forEach((tag) => revalidateTag(tag, "default"));
     }
 
     return NextResponse.json({ revalidated: true, docType: docType ?? "all" });

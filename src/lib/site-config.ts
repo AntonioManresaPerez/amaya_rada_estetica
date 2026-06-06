@@ -12,10 +12,10 @@ export const siteConfig = {
     email: "hola@amayarada.es",
   },
   address: {
-    streetAddress: "",
-    addressLocality: "Murcia",
+    streetAddress: "Calle Párroco Salvador Pérez",
+    addressLocality: "Santiago el Mayor",
     addressRegion: "Murcia",
-    postalCode: "",
+    postalCode: "30012",
     addressCountry: "ES",
   },
   geo: {

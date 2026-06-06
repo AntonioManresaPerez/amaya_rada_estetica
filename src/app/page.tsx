@@ -6,6 +6,7 @@ import {
 } from "@/sanity/lib/queries";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { FeaturedServicesSection } from "@/components/sections/FeaturedServicesSection";
+import { AboutSection } from "@/components/sections/AboutSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { CtaSection } from "@/components/sections/CtaSection";
 import type { SanityService, SanityTestimonial, SanitySiteSettings } from "@/types/sanity";
@@ -24,6 +25,7 @@ export default async function HomePage() {
         tagline={settings?.tagline}
       />
       <FeaturedServicesSection services={services ?? []} />
+      <AboutSection />
       <TestimonialsSection testimonials={testimonials ?? []} />
       <CtaSection />
     </main>

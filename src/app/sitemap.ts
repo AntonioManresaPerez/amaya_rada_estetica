@@ -15,30 +15,34 @@ const staticRoutes: MetadataRoute.Sitemap = [
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [serviceSlugs, postSlugs] = await Promise.all([
-    sanityFetch<{ slug: string }[]>({
-      query: groq`*[_type == "service" && defined(slug.current)]{"slug": slug.current}`,
-      tags: ["service"],
-    }),
-    sanityFetch<{ slug: string; publishedAt: string }[]>({
-      query: groq`*[_type == "post" && defined(slug.current)]{"slug": slug.current, publishedAt}`,
-      tags: ["post"],
-    }),
-  ]);
+  try {
+    const [serviceSlugs, postSlugs] = await Promise.all([
+      sanityFetch<{ slug: string }[]>({
+        query: groq`*[_type == "service" && defined(slug.current)]{"slug": slug.current}`,
+        tags: ["service"],
+      }),
+      sanityFetch<{ slug: string; publishedAt: string }[]>({
+        query: groq`*[_type == "post" && defined(slug.current)]{"slug": slug.current, publishedAt}`,
+        tags: ["post"],
+      }),
+    ]);
 
-  const serviceRoutes: MetadataRoute.Sitemap = (serviceSlugs ?? []).map((s) => ({
-    url: `${base}/servicios/${s.slug}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly",
-    priority: 0.8,
-  }));
+    const serviceRoutes: MetadataRoute.Sitemap = (serviceSlugs ?? []).map((s) => ({
+      url: `${base}/servicios/${s.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    }));
 
-  const postRoutes: MetadataRoute.Sitemap = (postSlugs ?? []).map((p) => ({
-    url: `${base}/blog/${p.slug}`,
-    lastModified: p.publishedAt ? new Date(p.publishedAt) : new Date(),
-    changeFrequency: "monthly",
-    priority: 0.7,
-  }));
+    const postRoutes: MetadataRoute.Sitemap = (postSlugs ?? []).map((p) => ({
+      url: `${base}/blog/${p.slug}`,
+      lastModified: p.publishedAt ? new Date(p.publishedAt) : new Date(),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    }));
 
-  return [...staticRoutes, ...serviceRoutes, ...postRoutes];
+    return [...staticRoutes, ...serviceRoutes, ...postRoutes];
+  } catch {
+    return staticRoutes;
+  }
 }

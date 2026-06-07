@@ -57,7 +57,7 @@ export function CtaSection() {
             rel="noopener noreferrer"
             className={cn(
               buttonVariants({ variant: "outline", size: "lg" }),
-              "border-lavender-veil/50 text-white hover:bg-white/10 hover:text-white"
+              "border-white/60 bg-transparent text-white hover:bg-white/10 hover:text-white hover:border-white"
             )}
           >
             WhatsApp

@@ -9,10 +9,11 @@ import { useForm } from "react-hook-form";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, Loader2, CheckCircle2, Clock, Euro } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, CheckCircle2, Clock, Euro } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { createReservation, getOccupiedSlots } from "@/actions/reservations";
+import { urlFor } from "@/sanity/lib/image";
 import type { SanityService } from "@/types/sanity";
 
 // ── Tipos ──────────────────────────────────────────────────────────────────
@@ -68,10 +69,31 @@ const slideVariants = {
 
 // ── Componente principal ───────────────────────────────────────────────────
 
+function categoryGradient(slug?: string) {
+  switch (slug) {
+    case "faciales":  return "from-vintage-lavender/25 to-lavender-veil/40";
+    case "capilares": return "from-indigo-velvet/25 to-thistle/35";
+    case "corporales": return "from-deep-space/15 to-thistle/30";
+    default: return "from-thistle/25 to-lavender-veil/35";
+  }
+}
+
 export function BookingForm({ services }: { services: SanityService[] }) {
   const router = useRouter();
   const [step, setStep] = useState<Step>(1);
   const [isPending, startTransition] = useTransition();
+  const [activeCategory, setActiveCategory] = useState<string>("all");
+
+  const categories = Array.from(
+    new Map(
+      services.filter((s) => s.category).map((s) => [s.category!.slug, s.category!])
+    ).values()
+  );
+
+  const filteredServices =
+    activeCategory === "all"
+      ? services
+      : services.filter((s) => s.category?.slug === activeCategory);
 
   const [selected, setSelected] = useState<SelectedService | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
@@ -153,7 +175,7 @@ export function BookingForm({ services }: { services: SanityService[] }) {
   const availableSlots = todaySlots.filter((s) => !occupiedSlots.includes(s));
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-12">
+    <div className={cn("mx-auto max-w-3xl px-6 py-12", step === 1 && "pb-32")}>
       {/* Indicador de pasos */}
       <nav aria-label="Pasos de reserva" className="mb-10">
         <ol className="flex items-center gap-4">
@@ -208,46 +230,123 @@ export function BookingForm({ services }: { services: SanityService[] }) {
           {/* ── Paso 1: Servicio ───────────────────────────────── */}
           {step === 1 && (
             <div>
-              <h2 className="font-serif text-2xl text-deep-space mb-6">
+              <h2 className="font-serif text-2xl text-deep-space mb-5">
                 ¿Qué tratamiento quieres reservar?
               </h2>
+
               {services.length === 0 ? (
                 <p className="text-muted-foreground">
                   No hay servicios disponibles en este momento.
                 </p>
               ) : (
-                <ul className="grid gap-3 sm:grid-cols-2">
-                  {services.map((s) => (
-                    <li key={s._id}>
+                <>
+                  {/* Filtro de categoría */}
+                  <div className="flex flex-wrap gap-2 mb-5">
+                    <button
+                      type="button"
+                      onClick={() => setActiveCategory("all")}
+                      className={cn(
+                        "px-3 py-1 rounded-full text-sm font-medium transition-colors",
+                        activeCategory === "all"
+                          ? "bg-indigo-velvet text-white"
+                          : "bg-thistle/20 text-deep-space hover:bg-thistle/40"
+                      )}
+                    >
+                      Todos ({services.length})
+                    </button>
+                    {categories.map((cat) => (
                       <button
+                        key={cat.slug}
                         type="button"
-                        onClick={() => handleServiceSelect(s)}
+                        onClick={() => setActiveCategory(cat.slug)}
                         className={cn(
-                          "w-full text-left rounded-xl border p-4 transition-all",
-                          selected?._id === s._id
-                            ? "border-indigo-velvet bg-lavender-veil/50 ring-2 ring-indigo-velvet/30"
-                            : "border-thistle/40 bg-card hover:border-vintage-lavender hover:shadow-sm"
+                          "px-3 py-1 rounded-full text-sm font-medium transition-colors",
+                          activeCategory === cat.slug
+                            ? "bg-indigo-velvet text-white"
+                            : "bg-thistle/20 text-deep-space hover:bg-thistle/40"
                         )}
                       >
-                        <p className="font-medium text-deep-space">{s.title}</p>
-                        <div className="mt-1 flex flex-wrap gap-3 text-xs text-muted-foreground">
-                          {s.duration != null && (
-                            <span className="flex items-center gap-1">
-                              <Clock className="h-3 w-3" />
-                              {s.duration} min
-                            </span>
-                          )}
-                          {s.price != null && (
-                            <span className="flex items-center gap-1">
-                              <Euro className="h-3 w-3" />
-                              Desde {s.price}€
-                            </span>
-                          )}
-                        </div>
+                        {cat.title} ({services.filter((s) => s.category?.slug === cat.slug).length})
                       </button>
-                    </li>
-                  ))}
-                </ul>
+                    ))}
+                  </div>
+
+                  {/* Cuadrícula de servicios */}
+                  <ul className="grid gap-3 sm:grid-cols-2">
+                    {filteredServices.map((s) => {
+                      const isSelected = selected?._id === s._id;
+                      const imgUrl = s.image
+                        ? urlFor(s.image).width(480).height(220).url()
+                        : null;
+                      return (
+                        <li key={s._id}>
+                          <button
+                            type="button"
+                            onClick={() => handleServiceSelect(s)}
+                            className={cn(
+                              "relative w-full text-left rounded-xl border overflow-hidden min-h-[110px] transition-all",
+                              isSelected
+                                ? "border-indigo-velvet ring-2 ring-indigo-velvet/40"
+                                : "border-thistle/40 hover:border-vintage-lavender hover:shadow-md"
+                            )}
+                          >
+                            {/* Fondo degradado por categoría */}
+                            <div
+                              className={cn(
+                                "absolute inset-0 bg-gradient-to-br",
+                                categoryGradient(s.category?.slug)
+                              )}
+                            />
+                            {/* Imagen con opacidad (si existe en Sanity) */}
+                            {imgUrl && (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img
+                                src={imgUrl}
+                                alt=""
+                                aria-hidden
+                                className="absolute inset-0 w-full h-full object-cover opacity-25"
+                              />
+                            )}
+                            {/* Overlay seleccionado */}
+                            {isSelected && (
+                              <div className="absolute inset-0 bg-indigo-velvet/10" />
+                            )}
+
+                            {/* Contenido */}
+                            <div className="relative z-10 p-4">
+                              <div className="flex items-start justify-between gap-2">
+                                <p className="font-medium text-deep-space leading-tight">
+                                  {s.title}
+                                </p>
+                                {isSelected && (
+                                  <CheckCircle2 className="h-4 w-4 text-indigo-velvet flex-shrink-0 mt-0.5" />
+                                )}
+                              </div>
+                              <div className="mt-2 flex flex-wrap gap-1.5 text-xs text-deep-space/70">
+                                {s.duration != null && (
+                                  <span className="flex items-center gap-1 bg-white/60 rounded-full px-2 py-0.5 backdrop-blur-sm">
+                                    <Clock className="h-3 w-3" />
+                                    {s.duration} min
+                                  </span>
+                                )}
+                                {s.price != null ? (
+                                  <span className="flex items-center gap-1 bg-white/60 rounded-full px-2 py-0.5 backdrop-blur-sm">
+                                    <Euro className="h-3 w-3" />
+                                    {s.price}€
+                                  </span>
+                                ) : (
+                                  <span className="flex items-center gap-1 bg-white/60 rounded-full px-2 py-0.5 backdrop-blur-sm font-medium text-vintage-lavender">
+                                    Gratis
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </>
               )}
             </div>
           )}
@@ -489,41 +588,75 @@ export function BookingForm({ services }: { services: SanityService[] }) {
         </motion.div>
       </AnimatePresence>
 
-      {/* Navegación entre pasos */}
-      <div className="mt-8 flex items-center justify-between">
-        {step > 1 ? (
+      {/* Navegación pasos 2 y 3 */}
+      {step > 1 && (
+        <div className="mt-8 flex items-center justify-between">
           <button
             type="button"
             onClick={() => setStep((s) => (s - 1) as Step)}
-            className={cn(
-              buttonVariants({ variant: "ghost", size: "sm" }),
-              "gap-1"
-            )}
+            className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "gap-1")}
           >
             <ChevronLeft className="h-4 w-4" />
             Atrás
           </button>
-        ) : (
-          <span />
-        )}
 
-        {step < 3 && (
-          <button
-            type="button"
-            disabled={
-              (step === 1 && !selected) ||
-              (step === 2 && (!selectedDate || !selectedTime))
-            }
-            onClick={() => setStep((s) => (s + 1) as Step)}
-            className={cn(
-              buttonVariants({ size: "default" }),
-              "disabled:opacity-40 disabled:cursor-not-allowed"
-            )}
+          {step === 2 && (
+            <button
+              type="button"
+              disabled={!selectedDate || !selectedTime}
+              onClick={() => setStep(3)}
+              className={cn(
+                buttonVariants({ size: "default" }),
+                "gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+              )}
+            >
+              Siguiente
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Barra sticky paso 1: aparece al seleccionar un servicio */}
+      <AnimatePresence>
+        {step === 1 && selected && (
+          <motion.div
+            initial={{ y: 80, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 80, opacity: 0 }}
+            transition={{ type: "spring", damping: 22, stiffness: 300 }}
+            className="fixed bottom-0 left-0 right-0 z-50 border-t border-thistle/30 bg-white/95 backdrop-blur-sm px-6 py-4 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]"
           >
-            Siguiente
-          </button>
+            <div className="mx-auto max-w-3xl flex items-center justify-between gap-4">
+              <div className="min-w-0">
+                <p className="font-medium text-deep-space truncate">{selected.title}</p>
+                <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
+                  {selected.durationMin && (
+                    <span className="flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      {selected.durationMin} min
+                    </span>
+                  )}
+                  {selected.price != null && (
+                    <span className="flex items-center gap-1">
+                      <Euro className="h-3 w-3" />
+                      {selected.price}€
+                    </span>
+                  )}
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setStep(2)}
+                className={cn(buttonVariants({ size: "default" }), "flex-shrink-0 gap-2")}
+              >
+                Siguiente
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          </motion.div>
         )}
-      </div>
+      </AnimatePresence>
     </div>
   );
 }

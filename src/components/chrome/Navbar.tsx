@@ -20,12 +20,26 @@ const navLinks = [
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [curtainActive, setCurtainActive] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handler, { passive: true });
     return () => window.removeEventListener("scroll", handler);
+  }, []);
+
+  useEffect(() => {
+    const tint = () => setCurtainActive(true);
+    const untint = () => setCurtainActive(false);
+    window.addEventListener("curtain:open", tint);
+    window.addEventListener("curtain:settle-in", tint);
+    window.addEventListener("curtain:settle-out", untint);
+    return () => {
+      window.removeEventListener("curtain:open", tint);
+      window.removeEventListener("curtain:settle-in", tint);
+      window.removeEventListener("curtain:settle-out", untint);
+    };
   }, []);
 
   useEffect(() => {
@@ -40,7 +54,9 @@ export function Navbar() {
       <header
         className={cn(
           "fixed top-0 z-50 w-full transition-all duration-300",
-          scrolled
+          curtainActive
+            ? "bg-lavender-veil/80 backdrop-blur-md border-b border-thistle/40"
+            : scrolled
             ? "bg-background/90 shadow-sm backdrop-blur-md border-b border-thistle/30"
             : "bg-transparent"
         )}

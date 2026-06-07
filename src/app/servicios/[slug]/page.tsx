@@ -8,6 +8,21 @@ import { buildMetadata } from "@/lib/seo";
 import { buttonVariants } from "@/components/ui/button";
 import type { SanityService } from "@/types/sanity";
 
+const CDN = "https://images.pexels.com/photos";
+const pexels = (id: number) =>
+  `${CDN}/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop`;
+
+const SERVICE_PHOTOS: Record<string, number> = {
+  dermapen: 30809949,
+  "higiene-facial": 3985329,
+  laser: 4586726,
+  pedicura: 34930123,
+  maderoterapia: 6628691,
+  presoterapia: 5888064,
+  manchas: 5701545,
+  vacum: 8312823,
+};
+
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
@@ -115,10 +130,14 @@ export default async function ServicePage({ params }: Props) {
           </Link>
         </div>
 
-        {service.image && (
+        {(service.image || SERVICE_PHOTOS[service.slug]) && (
           <div className="relative aspect-4/3 rounded-2xl overflow-hidden shadow-lg">
             <Image
-              src={urlFor(service.image).width(800).height(600).url()}
+              src={
+                service.image
+                  ? urlFor(service.image).width(800).height(600).url()
+                  : pexels(SERVICE_PHOTOS[service.slug])
+              }
               alt={service.title}
               fill
               className="object-cover"

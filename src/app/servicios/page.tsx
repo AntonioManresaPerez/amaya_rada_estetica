@@ -6,6 +6,21 @@ import { urlFor } from "@/sanity/lib/image";
 import { buildMetadata } from "@/lib/seo";
 import type { SanityService, SanityServiceCategory } from "@/types/sanity";
 
+const CDN = "https://images.pexels.com/photos";
+const pexels = (id: number) =>
+  `${CDN}/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=600&h=450&fit=crop`;
+
+const SERVICE_PHOTOS: Record<string, number> = {
+  dermapen: 30809949,
+  "higiene-facial": 3985329,
+  laser: 4586726,
+  pedicura: 34930123,
+  maderoterapia: 6628691,
+  presoterapia: 5888064,
+  manchas: 5701545,
+  vacum: 8312823,
+};
+
 export const metadata = buildMetadata({
   title: "Servicios de Estética en Murcia",
   description:
@@ -14,15 +29,20 @@ export const metadata = buildMetadata({
 });
 
 function ServiceCard({ service }: { service: SanityService }) {
+  const fallbackId = SERVICE_PHOTOS[service.slug];
+  const imgSrc = service.image
+    ? urlFor(service.image).width(600).height(450).url()
+    : fallbackId ? pexels(fallbackId) : null;
+
   return (
     <Link
       href={`/servicios/${service.slug}`}
       className="group flex flex-col rounded-2xl border border-thistle/40 bg-card overflow-hidden shadow-sm hover:shadow-md transition-shadow"
     >
       <div className="relative aspect-4/3 bg-lavender-veil overflow-hidden">
-        {service.image && (
+        {imgSrc && (
           <Image
-            src={urlFor(service.image).width(600).height(450).url()}
+            src={imgSrc}
             alt={service.title}
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-105"

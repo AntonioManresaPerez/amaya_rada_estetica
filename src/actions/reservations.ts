@@ -90,14 +90,14 @@ export async function createReservation(
     .eq("appointment_date", val.appointmentDate)
     .neq("status", "cancelled");
 
-  const BUFFER = 15;
+  const BUFFER = 10;
   const newStart = timeToMinutes(val.appointmentTime);
-  const newEnd = newStart + (val.durationMin ?? 60) + BUFFER;
+  const newEnd = newStart + (val.durationMin ?? 60); // sin buffer en el nuevo
 
   const hasConflict = (existingReservations ?? []).some(
     (r: { appointment_time: string; duration_min: number | null }) => {
       const existStart = timeToMinutes(r.appointment_time.slice(0, 5));
-      const existEnd = existStart + (r.duration_min ?? 60) + BUFFER;
+      const existEnd = existStart + (r.duration_min ?? 60) + BUFFER; // buffer solo en existentes
       return newStart < existEnd && existStart < newEnd;
     }
   );
@@ -166,7 +166,7 @@ export async function getOccupiedSlots(
     .eq("appointment_date", date)
     .neq("status", "cancelled");
 
-  const BUFFER = 15;
+  const BUFFER = 10;
   const reservations = (
     data ?? []
   ).map((r: { appointment_time: string; duration_min: number | null }) => {
@@ -179,20 +179,22 @@ export async function getOccupiedSlots(
 
   const blocked = new Set<string>();
 
-  // Comprueba todos los slots posibles (10:00–19:00).
-  // generateSlots en el frontend descartará los que no entren en el horario del día.
-  for (let h = 10; h <= 19; h++) {
-    const slotStart = h * 60;
-    const slotEnd = slotStart + newServiceDuration + BUFFER;
+  // Genera slots cada 30 min: mañana 10:00–13:30, tarde 16:00–19:30
+  const slotMins: number[] = [];
+  for (let t = 10 * 60; t <= 13 * 60 + 30; t += 30) slotMins.push(t);
+  for (let t = 16 * 60; t <= 19 * 60 + 30; t += 30) slotMins.push(t);
 
-    // El slot está bloqueado si se solapa con alguna reserva existente:
-    // [slotStart, slotEnd) ∩ [r.startMin, r.endMin) ≠ ∅
+  for (const slotStart of slotMins) {
+    // Buffer solo en reservas existentes; el nuevo servicio no suma buffer.
+    const slotEndNoBuffer = slotStart + newServiceDuration;
     const isBlocked = reservations.some(
-      (r) => slotStart < r.endMin && r.startMin < slotEnd
+      (r) => slotStart < r.endMin && r.startMin < slotEndNoBuffer
     );
 
     if (isBlocked) {
-      blocked.add(`${h.toString().padStart(2, "0")}:00`);
+      const hh = Math.floor(slotStart / 60).toString().padStart(2, "0");
+      const mm = (slotStart % 60).toString().padStart(2, "0");
+      blocked.add(`${hh}:${mm}`);
     }
   }
 

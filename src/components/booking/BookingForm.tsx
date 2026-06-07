@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Loader2, CheckCircle2, Clock, Euro } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, CheckCircle2, Clock, Euro, MessageCircle, AlertTriangle, Search } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { createReservation, getOccupiedSlots } from "@/actions/reservations";
@@ -31,18 +31,61 @@ interface SelectedService {
 // ── Helpers de horario ─────────────────────────────────────────────────────
 
 function generateSlots(date: Date): string[] {
-  const day = date.getDay(); // 0=Dom, 6=Sáb
+  const day = date.getDay();
   if (day === 0) return [];
-  const lastHour = day === 6 ? 13 : 19; // Sáb cierra a 14:00, ú último slot 13:00
-  const slots: string[] = [];
-  for (let h = 10; h <= lastHour; h++) {
-    slots.push(`${h.toString().padStart(2, "0")}:00`);
-  }
-  return slots;
+
+  const fmt = (totalMin: number) => {
+    const h = Math.floor(totalMin / 60).toString().padStart(2, "0");
+    const m = (totalMin % 60).toString().padStart(2, "0");
+    return `${h}:${m}`;
+  };
+  const range = (startMin: number, endMin: number) => {
+    const slots: string[] = [];
+    for (let t = startMin; t <= endMin; t += 30) slots.push(fmt(t));
+    return slots;
+  };
+
+  // Mañana: 10:00 – 13:30 (cierre 14:00; el servicio puede terminar a las 14:xx)
+  const morning = range(10 * 60, 13 * 60 + 30);
+  if (day === 6) return morning;
+  // Tarde L-V: 16:00 – 19:30 (cierre 20:00)
+  return [...morning, ...range(16 * 60, 19 * 60 + 30)];
 }
 
 function isWeekend(date: Date) {
   return date.getDay() === 0; // Solo domingos cerrado
+}
+
+// Cierre de sesión en minutos: mañana→14:00, tarde→20:00
+function sessionCloseMin(slotHour: number): number {
+  return slotHour < 15 ? 14 * 60 : 20 * 60;
+}
+
+function wouldOverflowSession(slot: string, durationMin: number): boolean {
+  const [h, m] = slot.split(":").map(Number);
+  return h * 60 + m + durationMin > sessionCloseMin(h);
+}
+
+function formatEndTime(slot: string, durationMin: number): string {
+  const [h, m] = slot.split(":").map(Number);
+  const totalMin = h * 60 + m + durationMin;
+  return `${Math.floor(totalMin / 60).toString().padStart(2, "0")}:${(totalMin % 60).toString().padStart(2, "0")}`;
+}
+
+function buildWhatsAppUrl(
+  serviceName: string,
+  durationMin: number,
+  slot: string,
+  date: Date
+): string {
+  const closeStr = parseInt(slot) < 15 ? "14:00" : "20:00";
+  const endStr = formatEndTime(slot, durationMin);
+  const dateStr = format(date, "d 'de' MMMM yyyy", { locale: es });
+  const msg =
+    `Hola! Me gustaría reservar "${serviceName}" a las ${slot} del ${dateStr}. ` +
+    `El tratamiento dura ${durationMin} min y terminaría a las ${endStr}, ` +
+    `sé que cerráis a las ${closeStr}. ¿Podéis confirmar si hay disponibilidad? Gracias 😊`;
+  return `https://wa.me/34604807886?text=${encodeURIComponent(msg)}`;
 }
 
 // ── Esquema del formulario de contacto ────────────────────────────────────
@@ -71,10 +114,19 @@ const slideVariants = {
 
 function categoryGradient(slug?: string) {
   switch (slug) {
-    case "faciales":  return "from-vintage-lavender/25 to-lavender-veil/40";
-    case "capilares": return "from-indigo-velvet/25 to-thistle/35";
-    case "corporales": return "from-deep-space/15 to-thistle/30";
-    default: return "from-thistle/25 to-lavender-veil/35";
+    case "faciales":  return "from-lavender-veil/30 via-lavender-veil/15 to-thistle/10";
+    case "capilares": return "from-thistle/25 via-thistle/12 to-lavender-veil/10";
+    case "corporales": return "from-vintage-lavender/20 via-thistle/12 to-lavender-veil/8";
+    default: return "from-lavender-veil/25 via-thistle/12 to-vintage-lavender/8";
+  }
+}
+
+function categoryAccentBar(slug?: string) {
+  switch (slug) {
+    case "faciales":  return "bg-vintage-lavender";
+    case "capilares": return "bg-indigo-velvet";
+    case "corporales": return "bg-thistle";
+    default: return "bg-vintage-lavender";
   }
 }
 
@@ -83,6 +135,7 @@ export function BookingForm({ services }: { services: SanityService[] }) {
   const [step, setStep] = useState<Step>(1);
   const [isPending, startTransition] = useTransition();
   const [activeCategory, setActiveCategory] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const categories = Array.from(
     new Map(
@@ -90,10 +143,12 @@ export function BookingForm({ services }: { services: SanityService[] }) {
     ).values()
   );
 
-  const filteredServices =
-    activeCategory === "all"
-      ? services
-      : services.filter((s) => s.category?.slug === activeCategory);
+  const filteredServices = services.filter((s) => {
+    const matchesCategory = activeCategory === "all" || s.category?.slug === activeCategory;
+    const q = searchQuery.trim().toLowerCase();
+    const matchesSearch = !q || s.title.toLowerCase().includes(q) || s.category?.title.toLowerCase().includes(q);
+    return matchesCategory && matchesSearch;
+  });
 
   const [selected, setSelected] = useState<SelectedService | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
@@ -130,6 +185,10 @@ export function BookingForm({ services }: { services: SanityService[] }) {
   }, [selected]);
 
   const handleServiceSelect = (service: SanityService) => {
+    if (selected?._id === service._id) {
+      setSelected(null);
+      return;
+    }
     setSelected({
       _id: service._id,
       title: service.title,
@@ -175,7 +234,7 @@ export function BookingForm({ services }: { services: SanityService[] }) {
   const availableSlots = todaySlots.filter((s) => !occupiedSlots.includes(s));
 
   return (
-    <div className={cn("mx-auto max-w-3xl px-6 py-12", step === 1 && "pb-32")}>
+    <div className={cn("mx-auto px-6 py-12", step === 1 ? "max-w-6xl pb-32" : "max-w-3xl")}>
       {/* Indicador de pasos */}
       <nav aria-label="Pasos de reserva" className="mb-10">
         <ol className="flex items-center gap-4">
@@ -230,9 +289,21 @@ export function BookingForm({ services }: { services: SanityService[] }) {
           {/* ── Paso 1: Servicio ───────────────────────────────── */}
           {step === 1 && (
             <div>
-              <h2 className="font-serif text-2xl text-deep-space mb-5">
-                ¿Qué tratamiento quieres reservar?
-              </h2>
+              <div className="flex items-end gap-4 mb-5">
+                <h2 className="font-serif text-2xl text-deep-space flex-shrink-0">
+                  ¿Qué tratamiento quieres reservar?
+                </h2>
+                <div className="relative w-48">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+                  <input
+                    type="search"
+                    placeholder="Buscar…"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full rounded-full border border-thistle/40 bg-card pl-8 pr-3 py-1.5 text-sm outline-none transition focus-visible:ring-2 focus-visible:ring-vintage-lavender focus-visible:border-vintage-lavender placeholder:text-muted-foreground/60"
+                  />
+                </div>
+              </div>
 
               {services.length === 0 ? (
                 <p className="text-muted-foreground">
@@ -240,8 +311,8 @@ export function BookingForm({ services }: { services: SanityService[] }) {
                 </p>
               ) : (
                 <>
-                  {/* Filtro de categoría */}
-                  <div className="flex flex-wrap gap-2 mb-5">
+                  {/* Filtro de categoría + buscador */}
+                  <div className="flex flex-wrap items-center gap-2 mb-5">
                     <button
                       type="button"
                       onClick={() => setActiveCategory("all")}
@@ -272,22 +343,22 @@ export function BookingForm({ services }: { services: SanityService[] }) {
                   </div>
 
                   {/* Cuadrícula de servicios */}
-                  <ul className="grid gap-3 sm:grid-cols-2">
+                  <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     {filteredServices.map((s) => {
                       const isSelected = selected?._id === s._id;
                       const imgUrl = s.image
                         ? urlFor(s.image).width(480).height(220).url()
                         : null;
                       return (
-                        <li key={s._id}>
+                        <li key={s._id} className="relative">
                           <button
                             type="button"
                             onClick={() => handleServiceSelect(s)}
                             className={cn(
-                              "relative w-full text-left rounded-xl border overflow-hidden min-h-[110px] transition-all",
+                              "relative w-full text-left rounded-2xl border overflow-hidden min-h-[130px] transition-all duration-300",
                               isSelected
-                                ? "border-indigo-velvet ring-2 ring-indigo-velvet/40"
-                                : "border-thistle/40 hover:border-vintage-lavender hover:shadow-md"
+                                ? "border-indigo-velvet ring-2 ring-indigo-velvet/30 shadow-xl scale-[1.02]"
+                                : "border-thistle/30 hover:border-vintage-lavender/60 hover:shadow-2xl hover:shadow-deep-space/15 hover:scale-[1.05] hover:z-10"
                             )}
                           >
                             {/* Fondo degradado por categoría */}
@@ -297,45 +368,54 @@ export function BookingForm({ services }: { services: SanityService[] }) {
                                 categoryGradient(s.category?.slug)
                               )}
                             />
-                            {/* Imagen con opacidad (si existe en Sanity) */}
+                            {/* Franja de color superior por categoría */}
+                            <div className={cn("absolute top-0 left-0 right-0 h-[3px]", categoryAccentBar(s.category?.slug))} />
+                            {/* Imagen real de Sanity (si existe) */}
                             {imgUrl && (
                               // eslint-disable-next-line @next/next/no-img-element
                               <img
                                 src={imgUrl}
                                 alt=""
                                 aria-hidden
-                                className="absolute inset-0 w-full h-full object-cover opacity-25"
+                                className="absolute inset-0 w-full h-full object-cover opacity-20"
                               />
                             )}
                             {/* Overlay seleccionado */}
                             {isSelected && (
-                              <div className="absolute inset-0 bg-indigo-velvet/10" />
+                              <div className="absolute inset-0 bg-indigo-velvet/8" />
                             )}
 
                             {/* Contenido */}
-                            <div className="relative z-10 p-4">
-                              <div className="flex items-start justify-between gap-2">
-                                <p className="font-medium text-deep-space leading-tight">
-                                  {s.title}
-                                </p>
-                                {isSelected && (
-                                  <CheckCircle2 className="h-4 w-4 text-indigo-velvet flex-shrink-0 mt-0.5" />
+                            <div className="relative z-10 p-4 pt-5 flex flex-col justify-between h-full min-h-[130px]">
+                              <div>
+                                {s.category && (
+                                  <p className="text-[10px] font-semibold tracking-[0.15em] uppercase text-deep-space/45 mb-1.5">
+                                    {s.category.title}
+                                  </p>
                                 )}
+                                <div className="flex items-start justify-between gap-2">
+                                  <p className="font-serif font-semibold text-deep-space leading-snug text-[15px]">
+                                    {s.title}
+                                  </p>
+                                  {isSelected && (
+                                    <CheckCircle2 className="h-4 w-4 text-indigo-velvet flex-shrink-0 mt-0.5" />
+                                  )}
+                                </div>
                               </div>
-                              <div className="mt-2 flex flex-wrap gap-1.5 text-xs text-deep-space/70">
+                              <div className="mt-3 flex flex-wrap gap-1.5 text-xs text-deep-space/65">
                                 {s.duration != null && (
-                                  <span className="flex items-center gap-1 bg-white/60 rounded-full px-2 py-0.5 backdrop-blur-sm">
+                                  <span className="flex items-center gap-1 bg-white/55 rounded-full px-2 py-0.5">
                                     <Clock className="h-3 w-3" />
                                     {s.duration} min
                                   </span>
                                 )}
                                 {s.price != null ? (
-                                  <span className="flex items-center gap-1 bg-white/60 rounded-full px-2 py-0.5 backdrop-blur-sm">
+                                  <span className="flex items-center gap-1 bg-white/55 rounded-full px-2 py-0.5">
                                     <Euro className="h-3 w-3" />
                                     {s.price}€
                                   </span>
                                 ) : (
-                                  <span className="flex items-center gap-1 bg-white/60 rounded-full px-2 py-0.5 backdrop-blur-sm font-medium text-vintage-lavender">
+                                  <span className="flex items-center gap-1 bg-white/55 rounded-full px-2 py-0.5 font-medium text-vintage-lavender">
                                     Gratis
                                   </span>
                                 )}
@@ -396,24 +476,52 @@ export function BookingForm({ services }: { services: SanityService[] }) {
                         Huecos disponibles el{" "}
                         {format(selectedDate, "d 'de' MMMM", { locale: es })}:
                       </p>
-                      <ul className="grid grid-cols-3 gap-2">
-                        {availableSlots.map((slot) => (
-                          <li key={slot}>
-                            <button
-                              type="button"
-                              onClick={() => setSelectedTime(slot)}
-                              className={cn(
-                                "w-full rounded-lg border py-2 text-sm font-medium transition-all",
-                                selectedTime === slot
-                                  ? "border-indigo-velvet bg-indigo-velvet text-white"
-                                  : "border-thistle/40 bg-card hover:border-vintage-lavender"
-                              )}
-                            >
-                              {slot}
-                            </button>
-                          </li>
-                        ))}
+                      <ul className="grid grid-cols-4 gap-2">
+                        {availableSlots.map((slot) => {
+                          const overflow = selected
+                            ? wouldOverflowSession(slot, selected.durationMin)
+                            : false;
+                          return (
+                            <li key={slot}>
+                              <button
+                                type="button"
+                                onClick={() => setSelectedTime(slot)}
+                                className={cn(
+                                  "relative w-full rounded-lg border py-2 text-sm font-medium transition-all",
+                                  selectedTime === slot
+                                    ? overflow
+                                      ? "border-amber-400 bg-amber-400 text-white"
+                                      : "border-indigo-velvet bg-indigo-velvet text-white"
+                                    : overflow
+                                      ? "border-amber-300/70 bg-amber-50 text-amber-800 hover:border-amber-400"
+                                      : "border-thistle/40 bg-card hover:border-vintage-lavender"
+                                )}
+                              >
+                                {slot}
+                                {overflow && (
+                                  <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-amber-400">
+                                    <AlertTriangle className="h-2 w-2 text-white" />
+                                  </span>
+                                )}
+                              </button>
+                            </li>
+                          );
+                        })}
                       </ul>
+
+                      {/* Aviso WhatsApp si el slot seleccionado se pasa del cierre */}
+                      {selectedTime && selected && wouldOverflowSession(selectedTime, selected.durationMin) && (
+                        <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm">
+                          <p className="font-medium text-amber-800">
+                            Este tratamiento ({selected.durationMin} min) terminaría a las{" "}
+                            {formatEndTime(selectedTime, selected.durationMin)}, pasado el horario de cierre (
+                            {parseInt(selectedTime) < 15 ? "14:00" : "20:00"}).
+                          </p>
+                          <p className="mt-1 text-amber-700">
+                            Escríbenos por WhatsApp y te confirmamos si podemos atenderte a esa hora.
+                          </p>
+                        </div>
+                      )}
                     </>
                   )}
                 </div>
@@ -601,18 +709,34 @@ export function BookingForm({ services }: { services: SanityService[] }) {
           </button>
 
           {step === 2 && (
-            <button
-              type="button"
-              disabled={!selectedDate || !selectedTime}
-              onClick={() => setStep(3)}
-              className={cn(
-                buttonVariants({ size: "default" }),
-                "gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
-              )}
-            >
-              Siguiente
-              <ChevronRight className="h-4 w-4" />
-            </button>
+            selectedDate && selectedTime && selected &&
+            wouldOverflowSession(selectedTime, selected.durationMin) ? (
+              <a
+                href={buildWhatsAppUrl(selected.title, selected.durationMin, selectedTime, selectedDate)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(
+                  buttonVariants({ size: "default" }),
+                  "gap-2 bg-green-500 hover:bg-green-600 border-green-500 hover:border-green-600 text-white"
+                )}
+              >
+                <MessageCircle className="h-4 w-4" />
+                Consultar por WhatsApp
+              </a>
+            ) : (
+              <button
+                type="button"
+                disabled={!selectedDate || !selectedTime}
+                onClick={() => setStep(3)}
+                className={cn(
+                  buttonVariants({ size: "default" }),
+                  "gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                )}
+              >
+                Siguiente
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            )
           )}
         </div>
       )}

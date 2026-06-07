@@ -82,14 +82,20 @@ export default function ContactoPage() {
             <div>
               <h2 className="font-serif text-2xl text-indigo-velvet mb-5">Horarios</h2>
               <ul className="space-y-2">
-                {siteConfig.hours.map((h) => (
+                {Array.from(
+                  siteConfig.hours.reduce((map, h) => {
+                    const slots = map.get(h.day) ?? [];
+                    map.set(h.day, [...slots, `${h.open} – ${h.close}`]);
+                    return map;
+                  }, new Map<string, string[]>())
+                ).map(([day, slots]) => (
                   <li
-                    key={h.day}
+                    key={day}
                     className="flex justify-between text-sm border-b border-thistle/20 pb-2"
                   >
-                    <span className="font-medium">{DAY_MAP[h.day] ?? h.day}</span>
+                    <span className="font-medium">{DAY_MAP[day] ?? day}</span>
                     <span className="text-muted-foreground">
-                      {h.open} – {h.close}
+                      {slots.join(" / ")}
                     </span>
                   </li>
                 ))}
@@ -114,7 +120,7 @@ export default function ContactoPage() {
           {/* Map */}
           <div className="rounded-2xl overflow-hidden shadow-lg border border-thistle/40 aspect-square lg:aspect-auto lg:h-[500px]">
             <iframe
-              src={`https://www.google.com/maps?q=${siteConfig.geo.latitude},${siteConfig.geo.longitude}&z=15&output=embed`}
+              src={`https://www.google.com/maps?q=${encodeURIComponent(`${siteConfig.address.streetAddress}, ${siteConfig.address.postalCode} ${siteConfig.address.addressLocality}, ${siteConfig.address.addressRegion}`)}&z=17&output=embed`}
               width="100%"
               height="100%"
               style={{ border: 0 }}

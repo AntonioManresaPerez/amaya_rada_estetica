@@ -97,12 +97,16 @@ export function Footer() {
           <div>
             <p className="text-xs tracking-[0.2em] uppercase text-lavender-veil/50 mb-3">Horarios</p>
             <ul className="space-y-1 text-xs">
-              {siteConfig.hours.map((h) => (
-                <li key={h.day} className="flex gap-3">
-                  <span className="w-8 text-lavender-veil/60">{DAY_MAP[h.day] ?? h.day}</span>
-                  <span>
-                    {h.open} – {h.close}
-                  </span>
+              {Array.from(
+                siteConfig.hours.reduce((map, h) => {
+                  const slots = map.get(h.day) ?? [];
+                  map.set(h.day, [...slots, `${h.open} – ${h.close}`]);
+                  return map;
+                }, new Map<string, string[]>())
+              ).map(([day, slots]) => (
+                <li key={day} className="flex gap-3">
+                  <span className="w-8 text-lavender-veil/60">{DAY_MAP[day] ?? day}</span>
+                  <span>{slots.join(" / ")}</span>
                 </li>
               ))}
             </ul>

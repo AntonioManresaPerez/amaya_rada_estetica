@@ -22,7 +22,7 @@ export function AboutSection() {
       >
         {/* Imagen */}
         <motion.div variants={fadeUp} className="relative order-last lg:order-first">
-          <div className="relative aspect-4/5 max-w-md mx-auto">
+          <div className="relative aspect-4/5 w-full">
             {/* Marco decorativo */}
             <div className="absolute -inset-4 rounded-[40%_60%_55%_45%/45%_55%_60%_40%] bg-thistle/25 -z-10" />
             <div className="relative h-full w-full rounded-[35%_65%_50%_50%/40%_50%_65%_45%] overflow-hidden bg-lavender-veil isolate">
@@ -34,7 +34,7 @@ export function AboutSection() {
                 src="/amaya-rada.webp"
                 alt="Amaya Rada, esteticista en Murcia"
                 fill
-                className="object-cover object-top"
+                className="object-cover object-[50%_15%]"
                 priority
               />
             </div>

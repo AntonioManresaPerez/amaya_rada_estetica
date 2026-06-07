@@ -11,14 +11,14 @@ export function AboutSection() {
   return (
     <section
       id="sobre-mi"
-      className="py-16 md:py-24 px-6 bg-linear-to-b from-background to-lavender-veil/20"
+      className="min-h-screen flex items-center px-6 py-20 bg-linear-to-b from-background to-lavender-veil/20"
     >
       <motion.div
         variants={staggerContainer}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-80px" }}
-        className="mx-auto max-w-7xl grid gap-10 lg:gap-16 lg:grid-cols-2 items-center"
+        className="mx-auto w-full max-w-7xl grid gap-10 lg:gap-16 lg:grid-cols-2 items-center"
       >
         {/* Imagen */}
         <motion.div variants={fadeUp} className="relative order-last lg:order-first">

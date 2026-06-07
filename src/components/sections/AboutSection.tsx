@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
@@ -8,7 +9,10 @@ import { cn } from "@/lib/utils";
 
 export function AboutSection() {
   return (
-    <section className="py-16 md:py-24 px-6 bg-linear-to-b from-background to-lavender-veil/20">
+    <section
+      id="sobre-mi"
+      className="py-16 md:py-24 px-6 bg-linear-to-b from-background to-lavender-veil/20"
+    >
       <motion.div
         variants={staggerContainer}
         initial="hidden"
@@ -16,21 +20,23 @@ export function AboutSection() {
         viewport={{ once: true, margin: "-80px" }}
         className="mx-auto max-w-7xl grid gap-10 lg:gap-16 lg:grid-cols-2 items-center"
       >
-        {/* Imagen placeholder con forma orgánica */}
+        {/* Imagen */}
         <motion.div variants={fadeUp} className="relative order-last lg:order-first">
           <div className="relative aspect-4/5 max-w-md mx-auto">
             {/* Marco decorativo */}
             <div className="absolute -inset-4 rounded-[40%_60%_55%_45%/45%_55%_60%_40%] bg-thistle/25 -z-10" />
-            <div className="h-full w-full rounded-[35%_65%_50%_50%/40%_50%_65%_45%] overflow-hidden bg-lavender-veil flex items-center justify-center">
-              {/* Placeholder hasta que haya foto real */}
-              <div className="text-center px-8">
-                <div className="w-20 h-20 rounded-full bg-vintage-lavender/30 mx-auto mb-4 flex items-center justify-center">
-                  <svg viewBox="0 0 24 24" fill="none" className="w-10 h-10 text-vintage-lavender" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                  </svg>
-                </div>
-                <p className="text-sm text-vintage-lavender/70 italic">Foto de Amaya</p>
-              </div>
+            <div className="h-full w-full rounded-[35%_65%_50%_50%/40%_50%_65%_45%] overflow-hidden bg-lavender-veil">
+              {/*
+                FOTO: coloca tu imagen en public/amaya-rada.webp
+                Recomendado: WebP, 800×1000 px, < 200 KB
+              */}
+              <Image
+                src="/amaya-rada.webp"
+                alt="Amaya Rada, esteticista en Murcia"
+                fill
+                className="object-cover object-top"
+                priority
+              />
             </div>
           </div>
         </motion.div>

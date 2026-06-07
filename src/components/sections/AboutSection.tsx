@@ -32,11 +32,6 @@ export function AboutSection() {
                 <p className="text-sm text-vintage-lavender/70 italic">Foto de Amaya</p>
               </div>
             </div>
-            {/* Elemento decorativo flotante */}
-            <div className="absolute -bottom-4 -right-4 bg-white rounded-2xl shadow-lg p-4 border border-thistle/30 text-center min-w-30">
-              <p className="font-serif text-2xl text-vintage-lavender font-semibold">+10</p>
-              <p className="text-xs text-muted-foreground leading-tight mt-0.5">años de<br />experiencia</p>
-            </div>
           </div>
         </motion.div>
 

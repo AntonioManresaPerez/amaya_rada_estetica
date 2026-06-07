@@ -17,7 +17,7 @@ export function FeaturedServicesSection({ services }: Props) {
   if (!services.length) return null;
 
   return (
-    <section className="py-24 px-6">
+    <section className="py-16 md:py-24 px-6">
       <div className="mx-auto max-w-7xl">
         <motion.div
           variants={staggerContainer}
@@ -33,7 +33,7 @@ export function FeaturedServicesSection({ services }: Props) {
           </motion.p>
           <motion.h2
             variants={fadeUp}
-            className="text-center font-serif text-4xl text-deep-space mb-16"
+            className="text-center font-serif text-4xl text-deep-space mb-10 md:mb-16"
           >
             Servicios destacados
           </motion.h2>
@@ -45,7 +45,7 @@ export function FeaturedServicesSection({ services }: Props) {
                   href={`/servicios/${service.slug}`}
                   className="group flex flex-col rounded-2xl overflow-hidden border border-thistle/40 bg-card shadow-sm hover:shadow-md transition-shadow"
                 >
-                  <div className="relative aspect-[4/3] overflow-hidden bg-lavender-veil">
+                  <div className="relative aspect-4/3 overflow-hidden bg-lavender-veil">
                     {service.image && (
                       <Image
                         src={urlFor(service.image).width(600).height(450).url()}

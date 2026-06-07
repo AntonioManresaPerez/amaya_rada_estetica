@@ -29,7 +29,7 @@ export function Footer() {
 
   return (
     <footer className="bg-deep-space text-lavender-veil/80">
-      <div className="mx-auto max-w-7xl px-6 py-16 grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mx-auto max-w-7xl px-6 py-10 lg:py-16 grid gap-8 md:gap-10 md:grid-cols-3">
         {/* Brand */}
         <div className="space-y-4">
           <p className="font-serif text-xl font-semibold text-white">{siteConfig.shortName}</p>
@@ -88,7 +88,7 @@ export function Footer() {
                   href={`mailto:${siteConfig.contact.email}`}
                   className="hover:text-white transition-colors"
                 >
-                  {siteConfig.contact.email}
+                  <span className="break-all">{siteConfig.contact.email}</span>
                 </Link>
               </li>
               <li>{siteConfig.address.addressLocality}, España</li>

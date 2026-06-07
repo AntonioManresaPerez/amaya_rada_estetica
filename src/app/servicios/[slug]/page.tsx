@@ -116,7 +116,7 @@ export default async function ServicePage({ params }: Props) {
         </div>
 
         {service.image && (
-          <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-lg">
+          <div className="relative aspect-4/3 rounded-2xl overflow-hidden shadow-lg">
             <Image
               src={urlFor(service.image).width(800).height(600).url()}
               alt={service.title}

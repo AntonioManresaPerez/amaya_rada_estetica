@@ -32,6 +32,20 @@ Reglas de uso:
 
 ---
 
+## Mobile-first — prioridad máxima
+
+**Todo componente o cambio visual se diseña primero para móvil y luego se escala a pantallas mayores.**
+
+- Empezar siempre desde el breakpoint base (sin prefijo) y añadir `sm:`, `md:`, `lg:` para ampliar.
+- Nunca usar `sm:` o `md:` para "arreglar" móvil — el base ya debe funcionar en móvil.
+- Padding/gap/tamaños de fuente: valores menores en base, mayores con prefijo (`py-8 md:py-16`, `gap-6 md:gap-12`).
+- Grids: columna única en base, ampliar en breakpoints (`grid-cols-1 md:grid-cols-3`), nunca al revés.
+- Texto largo (emails, URLs, nombres): `break-all` o `truncate` para evitar desbordamiento en pantallas estrechas.
+- Touch targets mínimo 44×44 px en móvil (`min-h-11 min-w-11`).
+- Antes de dar una tarea por terminada, revisar mentalmente cómo se ve en 375 px de ancho.
+
+---
+
 ## Reglas fijas de desarrollo
 
 1. **TypeScript estricto** — `strict: true` en tsconfig. Nunca usar `any` ni `@ts-ignore` sin comentario de justificación.

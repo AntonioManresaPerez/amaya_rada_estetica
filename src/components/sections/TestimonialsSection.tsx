@@ -32,7 +32,7 @@ export function TestimonialsSection({ testimonials }: Props) {
   if (!testimonials.length) return null;
 
   return (
-    <section className="py-24 px-6 bg-lavender-veil/30">
+    <section className="py-16 md:py-24 px-6 bg-lavender-veil/30">
       <div className="mx-auto max-w-7xl">
         <motion.div
           variants={staggerContainer}
@@ -48,7 +48,7 @@ export function TestimonialsSection({ testimonials }: Props) {
           </motion.p>
           <motion.h2
             variants={fadeUp}
-            className="text-center font-serif text-4xl text-deep-space mb-16"
+            className="text-center font-serif text-4xl text-deep-space mb-10 md:mb-16"
           >
             Opiniones reales
           </motion.h2>

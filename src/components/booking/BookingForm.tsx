@@ -289,11 +289,11 @@ export function BookingForm({ services }: { services: SanityService[] }) {
           {/* ── Paso 1: Servicio ───────────────────────────────── */}
           {step === 1 && (
             <div>
-              <div className="flex items-end gap-4 mb-5">
-                <h2 className="font-serif text-2xl text-deep-space flex-shrink-0">
+              <div className="flex flex-col gap-3 mb-5 sm:flex-row sm:items-end sm:gap-4">
+                <h2 className="font-serif text-2xl text-deep-space shrink-0">
                   ¿Qué tratamiento quieres reservar?
                 </h2>
-                <div className="relative w-48">
+                <div className="relative w-full sm:w-48">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
                   <input
                     type="search"
@@ -364,7 +364,7 @@ export function BookingForm({ services }: { services: SanityService[] }) {
                             {/* Fondo degradado por categoría */}
                             <div
                               className={cn(
-                                "absolute inset-0 bg-gradient-to-br",
+                                "absolute inset-0 bg-linear-to-br",
                                 categoryGradient(s.category?.slug)
                               )}
                             />
@@ -398,7 +398,7 @@ export function BookingForm({ services }: { services: SanityService[] }) {
                                     {s.title}
                                   </p>
                                   {isSelected && (
-                                    <CheckCircle2 className="h-4 w-4 text-indigo-velvet flex-shrink-0 mt-0.5" />
+                                    <CheckCircle2 className="h-4 w-4 text-indigo-velvet shrink-0 mt-0.5" />
                                   )}
                                 </div>
                               </div>
@@ -476,7 +476,7 @@ export function BookingForm({ services }: { services: SanityService[] }) {
                         Huecos disponibles el{" "}
                         {format(selectedDate, "d 'de' MMMM", { locale: es })}:
                       </p>
-                      <ul className="grid grid-cols-4 gap-2">
+                      <ul className="grid grid-cols-3 gap-2 sm:grid-cols-4">
                         {availableSlots.map((slot) => {
                           const overflow = selected
                             ? wouldOverflowSession(slot, selected.durationMin)
@@ -772,7 +772,7 @@ export function BookingForm({ services }: { services: SanityService[] }) {
               <button
                 type="button"
                 onClick={() => setStep(2)}
-                className={cn(buttonVariants({ size: "default" }), "flex-shrink-0 gap-2")}
+                className={cn(buttonVariants({ size: "default" }), "shrink-0 gap-2")}
               >
                 Siguiente
                 <ChevronRight className="h-4 w-4" />

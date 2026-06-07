@@ -26,14 +26,14 @@ export default function ContactoPage() {
   return (
     <main className="flex-1 pt-24">
       <div className="mx-auto max-w-7xl px-6 py-16">
-        <header className="mb-16 text-center">
+        <header className="mb-10 md:mb-16 text-center">
           <p className="text-sm tracking-[0.3em] uppercase text-vintage-lavender mb-3">
             Estamos aquí para ti
           </p>
-          <h1 className="font-serif text-5xl text-deep-space">Contacto</h1>
+          <h1 className="font-serif text-4xl md:text-5xl text-deep-space">Contacto</h1>
         </header>
 
-        <div className="grid gap-12 lg:grid-cols-2 items-start">
+        <div className="grid gap-8 lg:gap-12 lg:grid-cols-2 items-start">
           {/* Info */}
           <div className="space-y-10">
             <div>
@@ -67,7 +67,7 @@ export default function ContactoPage() {
                     href={`mailto:${siteConfig.contact.email}`}
                     className="hover:text-vintage-lavender transition-colors"
                   >
-                    {siteConfig.contact.email}
+                    <span className="break-all">{siteConfig.contact.email}</span>
                   </Link>
                 </li>
                 <li className="flex gap-4">

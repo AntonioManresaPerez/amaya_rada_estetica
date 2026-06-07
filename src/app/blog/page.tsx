@@ -26,11 +26,11 @@ export default async function BlogPage() {
   return (
     <main className="flex-1 pt-24">
       <div className="mx-auto max-w-7xl px-6 py-16">
-        <header className="mb-16 text-center">
+        <header className="mb-10 md:mb-16 text-center">
           <p className="text-sm tracking-[0.3em] uppercase text-vintage-lavender mb-3">
             Artículos y consejos
           </p>
-          <h1 className="font-serif text-5xl text-deep-space">Blog</h1>
+          <h1 className="font-serif text-4xl md:text-5xl text-deep-space">Blog</h1>
         </header>
 
         {postList.length === 0 ? (
@@ -45,7 +45,7 @@ export default async function BlogPage() {
                   href={`/blog/${post.slug}`}
                   className="group flex flex-col rounded-2xl border border-thistle/40 bg-card overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                 >
-                  <div className="relative aspect-[16/9] overflow-hidden bg-lavender-veil">
+                  <div className="relative aspect-video overflow-hidden bg-lavender-veil">
                     {post.coverImage && (
                       <Image
                         src={urlFor(post.coverImage).width(600).height(338).url()}

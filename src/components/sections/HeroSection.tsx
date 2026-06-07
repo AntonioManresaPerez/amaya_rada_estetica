@@ -34,7 +34,7 @@ export function HeroSection({ heroVideo, tagline }: HeroSectionProps) {
           "absolute inset-0 -z-10",
           hasVideo
             ? "bg-deep-space/65"
-            : "bg-gradient-to-b from-lavender-veil via-[#f0e8f6] to-background"
+            : "bg-linear-to-b from-lavender-veil via-[#f0e8f6] to-background"
         )}
       />
 
@@ -57,7 +57,7 @@ export function HeroSection({ heroVideo, tagline }: HeroSectionProps) {
         <motion.h1
           variants={fadeUp}
           className={cn(
-            "mb-6 font-serif text-5xl leading-tight sm:text-6xl md:text-7xl",
+            "mb-6 font-serif text-4xl leading-tight sm:text-5xl md:text-6xl lg:text-7xl",
             hasVideo ? "text-white" : "text-deep-space"
           )}
         >

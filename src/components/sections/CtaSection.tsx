@@ -12,7 +12,7 @@ export function CtaSection() {
   const whatsappHref = `https://wa.me/${siteConfig.contact.whatsapp}?text=${text}`;
 
   return (
-    <section className="py-24 px-6 bg-gradient-to-br from-indigo-velvet to-deep-space">
+    <section className="py-16 md:py-24 px-6 bg-linear-to-br from-indigo-velvet to-deep-space">
       <motion.div
         variants={staggerContainer}
         initial="hidden"

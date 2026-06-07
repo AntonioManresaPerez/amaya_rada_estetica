@@ -19,7 +19,7 @@ function ServiceCard({ service }: { service: SanityService }) {
       href={`/servicios/${service.slug}`}
       className="group flex flex-col rounded-2xl border border-thistle/40 bg-card overflow-hidden shadow-sm hover:shadow-md transition-shadow"
     >
-      <div className="relative aspect-[4/3] bg-lavender-veil overflow-hidden">
+      <div className="relative aspect-4/3 bg-lavender-veil overflow-hidden">
         {service.image && (
           <Image
             src={urlFor(service.image).width(600).height(450).url()}
@@ -66,12 +66,12 @@ export default async function ServiciosPage() {
 
   return (
     <main className="flex-1 pt-24">
-      <div className="mx-auto max-w-7xl px-6 py-16">
-        <header className="mb-16 text-center">
+      <div className="mx-auto max-w-7xl px-6 py-10 md:py-16">
+        <header className="mb-10 md:mb-16 text-center">
           <p className="text-sm tracking-[0.3em] uppercase text-vintage-lavender mb-3">
             Lo que ofrecemos
           </p>
-          <h1 className="font-serif text-5xl text-deep-space">Nuestros servicios</h1>
+          <h1 className="font-serif text-4xl md:text-5xl text-deep-space">Nuestros servicios</h1>
         </header>
 
         {categoryList.length > 0 ? (

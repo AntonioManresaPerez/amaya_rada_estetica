@@ -8,17 +8,17 @@ import { cn } from "@/lib/utils";
 
 export function AboutSection() {
   return (
-    <section className="py-24 px-6 bg-gradient-to-b from-background to-lavender-veil/20">
+    <section className="py-16 md:py-24 px-6 bg-linear-to-b from-background to-lavender-veil/20">
       <motion.div
         variants={staggerContainer}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-80px" }}
-        className="mx-auto max-w-7xl grid gap-16 lg:grid-cols-2 items-center"
+        className="mx-auto max-w-7xl grid gap-10 lg:gap-16 lg:grid-cols-2 items-center"
       >
         {/* Imagen placeholder con forma orgánica */}
         <motion.div variants={fadeUp} className="relative order-last lg:order-first">
-          <div className="relative aspect-[4/5] max-w-md mx-auto">
+          <div className="relative aspect-4/5 max-w-md mx-auto">
             {/* Marco decorativo */}
             <div className="absolute -inset-4 rounded-[40%_60%_55%_45%/45%_55%_60%_40%] bg-thistle/25 -z-10" />
             <div className="h-full w-full rounded-[35%_65%_50%_50%/40%_50%_65%_45%] overflow-hidden bg-lavender-veil flex items-center justify-center">
@@ -33,7 +33,7 @@ export function AboutSection() {
               </div>
             </div>
             {/* Elemento decorativo flotante */}
-            <div className="absolute -bottom-4 -right-4 bg-white rounded-2xl shadow-lg p-4 border border-thistle/30 text-center min-w-[120px]">
+            <div className="absolute -bottom-4 -right-4 bg-white rounded-2xl shadow-lg p-4 border border-thistle/30 text-center min-w-30">
               <p className="font-serif text-2xl text-vintage-lavender font-semibold">+10</p>
               <p className="text-xs text-muted-foreground leading-tight mt-0.5">años de<br />experiencia</p>
             </div>
@@ -91,7 +91,7 @@ export function AboutSection() {
                 variants={fadeUp}
                 className="flex items-center gap-2 text-sm text-indigo-velvet/80"
               >
-                <span className="flex-shrink-0 h-1.5 w-1.5 rounded-full bg-vintage-lavender" />
+                <span className="shrink-0 h-1.5 w-1.5 rounded-full bg-vintage-lavender" />
                 {item}
               </motion.li>
             ))}

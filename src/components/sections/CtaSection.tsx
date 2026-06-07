@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
@@ -10,9 +11,51 @@ import { cn } from "@/lib/utils";
 export function CtaSection() {
   const text = encodeURIComponent("Hola Amaya, me gustaría reservar una cita.");
   const whatsappHref = `https://wa.me/${siteConfig.contact.whatsapp}?text=${text}`;
+  const handlingRef = useRef(false);
+
+  useEffect(() => {
+    let touchY = 0;
+
+    const isAtTop = () => {
+      const r = document.getElementById("reservar-cita")?.getBoundingClientRect();
+      if (!r) return false;
+      return r.top > -80 && r.top < 80;
+    };
+
+    const onWheel = (e: WheelEvent) => {
+      if (window.innerWidth < 768) return;
+      if (!isAtTop() || e.deltaY >= 0) return;
+      e.preventDefault();
+      if (handlingRef.current) return;
+      handlingRef.current = true;
+      window.dispatchEvent(new Event("cta:exit-up"));
+    };
+
+    const onTouchStart = (e: TouchEvent) => { touchY = e.touches[0].clientY; };
+    const onTouchEnd = (e: TouchEvent) => {
+      if (!isAtTop() || handlingRef.current) return;
+      const delta = touchY - e.changedTouches[0].clientY;
+      if (delta > -40) return;
+      handlingRef.current = true;
+      window.dispatchEvent(new Event("cta:exit-up"));
+    };
+
+    const onSettle = () => { handlingRef.current = false; };
+
+    window.addEventListener("wheel", onWheel, { passive: false });
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
+    window.addEventListener("curtain:settle-in", onSettle);
+    return () => {
+      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("curtain:settle-in", onSettle);
+    };
+  }, []);
 
   return (
-    <section className="py-16 md:py-24 px-6 bg-linear-to-br from-indigo-velvet to-deep-space">
+    <section id="reservar-cita" className="py-16 md:py-24 px-6 bg-linear-to-br from-indigo-velvet to-deep-space">
       <motion.div
         variants={staggerContainer}
         initial="hidden"

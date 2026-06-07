@@ -189,15 +189,35 @@ export function ServicesFullscreenSection() {
       if ((e.key === "ArrowUp" || e.key === "PageUp") && idx > 0) { e.preventDefault(); goTo(idx - 1, -1); }
     };
 
+    const onAboutExitDown = () => {
+      if (lockRef.current) return;
+      goExternal(() => {
+        const el = document.getElementById("reservar-cita");
+        if (el) window.scrollTo(0, absTop(el));
+      }, 1);
+    };
+
+    const onCtaExitUp = () => {
+      if (lockRef.current) return;
+      goExternal(() => {
+        const el = document.getElementById("sobre-mi");
+        if (el) window.scrollTo(0, absTop(el));
+      }, -1);
+    };
+
     window.addEventListener("wheel", onWheel, { passive: false });
     window.addEventListener("touchstart", onTouchStart, { passive: true });
     window.addEventListener("touchend", onTouchEnd, { passive: true });
     window.addEventListener("keydown", onKey);
+    window.addEventListener("about:exit-down", onAboutExitDown);
+    window.addEventListener("cta:exit-up", onCtaExitUp);
     return () => {
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchend", onTouchEnd);
       window.removeEventListener("keydown", onKey);
+      window.removeEventListener("about:exit-down", onAboutExitDown);
+      window.removeEventListener("cta:exit-up", onCtaExitUp);
     };
   }, [isInSection, isApproaching, enterSection, goTo, goExternal]);
 
@@ -217,7 +237,7 @@ export function ServicesFullscreenSection() {
       </AnimatePresence>
 
       {/* Curtain — desktop only; on mobile AnimatePresence crossfade handles the transition */}
-      <motion.div style={{ y: curtainY }} className="fixed inset-0 z-[49] hidden md:block bg-linear-to-b from-lavender-veil via-[#f0e8f6] to-background pointer-events-none" />
+      <motion.div style={{ y: curtainY }} className="fixed inset-0 z-49 hidden md:block bg-linear-to-b from-lavender-veil via-[#f0e8f6] to-background pointer-events-none" />
 
       {/* Progress dots — row on mobile, column on desktop */}
       <nav

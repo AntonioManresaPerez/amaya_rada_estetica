@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -8,6 +9,49 @@ import { fadeUp, staggerContainer } from "@/components/motion/animations";
 import { cn } from "@/lib/utils";
 
 export function AboutSection() {
+  const handlingRef = useRef(false);
+
+  useEffect(() => {
+    let touchY = 0;
+
+    const isInView = () => {
+      const r = document.getElementById("sobre-mi")?.getBoundingClientRect();
+      if (!r) return false;
+      return r.top > -80 && r.top < 80 && r.bottom > window.innerHeight - 80;
+    };
+
+    const onWheel = (e: WheelEvent) => {
+      if (window.innerWidth < 768) return;
+      if (!isInView() || e.deltaY <= 0) return;
+      e.preventDefault();
+      if (handlingRef.current) return;
+      handlingRef.current = true;
+      window.dispatchEvent(new Event("about:exit-down"));
+    };
+
+    const onTouchStart = (e: TouchEvent) => { touchY = e.touches[0].clientY; };
+    const onTouchEnd = (e: TouchEvent) => {
+      if (!isInView() || handlingRef.current) return;
+      const delta = touchY - e.changedTouches[0].clientY;
+      if (delta < 40) return;
+      handlingRef.current = true;
+      window.dispatchEvent(new Event("about:exit-down"));
+    };
+
+    const onSettle = () => { handlingRef.current = false; };
+
+    window.addEventListener("wheel", onWheel, { passive: false });
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
+    window.addEventListener("curtain:settle-out", onSettle);
+    return () => {
+      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("curtain:settle-out", onSettle);
+    };
+  }, []);
+
   return (
     <section
       id="sobre-mi"

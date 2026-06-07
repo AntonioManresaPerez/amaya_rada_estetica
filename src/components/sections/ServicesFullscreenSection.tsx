@@ -1,8 +1,9 @@
 "use client";
 
+import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 const CDN = "https://images.pexels.com/photos";
 
@@ -93,59 +94,95 @@ function pexelsUrl(id: number) {
   return `${CDN}/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop`;
 }
 
+function ServiceSection({ service, index }: { service: (typeof services)[number]; index: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  });
+
+  // Parallax: fondo se mueve a 0.4x la velocidad del scroll
+  const bgY = useTransform(scrollYProgress, [0, 1], ["8vh", "-8vh"]);
+  // Zoom suave: entra/sale ligeramente ampliado, centrado en escala 1
+  const bgScale = useTransform(scrollYProgress, [0, 0.4, 0.6, 1], [1.1, 1.0, 1.0, 1.1]);
+
+  const isRight = index % 2 !== 0;
+
+  return (
+    <div ref={ref} className="relative h-screen overflow-hidden flex items-end">
+      {/* Fondo con parallax + zoom */}
+      <motion.div
+        style={{ y: bgY, scale: bgScale }}
+        className="absolute inset-x-0 top-[-15%] bottom-[-15%]"
+      >
+        <Image
+          src={pexelsUrl(service.photoId)}
+          alt={service.alt}
+          fill
+          className="object-cover"
+          sizes="100vw"
+          priority={index === 0}
+        />
+      </motion.div>
+
+      {/* Gradiente de legibilidad */}
+      <div className="absolute inset-0 bg-linear-to-t from-deep-space/95 via-deep-space/30 to-transparent" />
+
+      {/* Número decorativo */}
+      <span
+        aria-hidden
+        className="absolute right-4 bottom-4 select-none pointer-events-none font-serif leading-none text-white/[0.04] text-[8rem] md:text-[14rem]"
+      >
+        {service.number}
+      </span>
+
+      {/* Contenido — alterna izquierda/derecha en desktop */}
+      <motion.div
+        initial={{ opacity: 0, y: 44, x: isRight ? 28 : -28 }}
+        whileInView={{ opacity: 1, y: 0, x: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+        className={`relative z-10 px-6 pb-12 max-w-xl ${
+          isRight
+            ? "md:ml-auto md:pr-16 md:pb-20 md:text-right"
+            : "md:px-16 md:pb-20"
+        }`}
+      >
+        {/* Línea de acento que barre desde el borde */}
+        <motion.div
+          initial={{ scaleX: 0 }}
+          whileInView={{ scaleX: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+          style={{ originX: isRight ? 1 : 0 }}
+          className={`mb-4 h-px w-16 bg-vintage-lavender/70 ${isRight ? "md:ml-auto" : ""}`}
+        />
+
+        <p className="mb-3 text-xs tracking-[0.35em] uppercase text-lavender-veil/60">
+          {service.number} &mdash; {service.subtitle}
+        </p>
+        <h2 className="mb-4 font-serif text-5xl leading-tight text-white md:text-7xl">
+          {service.title}
+        </h2>
+        <p className={`mb-8 max-w-sm text-base leading-relaxed text-lavender-veil/75 md:text-lg ${isRight ? "md:ml-auto" : ""}`}>
+          {service.description}
+        </p>
+        <Link
+          href="/reservar"
+          className="inline-flex items-center rounded-xl border border-white/25 bg-white/10 px-6 py-3 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/20"
+        >
+          Reservar tratamiento
+        </Link>
+      </motion.div>
+    </div>
+  );
+}
+
 export function ServicesFullscreenSection() {
   return (
     <section aria-label="Nuestros servicios">
       {services.map((service, i) => (
-        <div
-          key={service.id}
-          className="relative h-screen overflow-hidden flex items-end"
-        >
-          <Image
-            src={pexelsUrl(service.photoId)}
-            alt={service.alt}
-            fill
-            className="object-cover"
-            sizes="100vw"
-            priority={i === 0}
-          />
-
-          {/* Gradient — oscuro abajo, transparente arriba */}
-          <div className="absolute inset-0 bg-linear-to-t from-deep-space/90 via-deep-space/30 to-transparent" />
-
-          {/* Número grande decorativo */}
-          <span
-            aria-hidden
-            className="absolute right-4 bottom-4 select-none pointer-events-none font-serif leading-none text-white/[0.04] text-[8rem] md:text-[14rem]"
-          >
-            {service.number}
-          </span>
-
-          {/* Contenido */}
-          <motion.div
-            initial={{ opacity: 0, y: 36 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-            className="relative z-10 px-6 pb-12 max-w-xl md:px-16 md:pb-20"
-          >
-            <p className="mb-3 text-xs tracking-[0.35em] uppercase text-lavender-veil/60">
-              {service.number} &mdash; {service.subtitle}
-            </p>
-            <h2 className="mb-4 font-serif text-5xl leading-tight text-white md:text-7xl">
-              {service.title}
-            </h2>
-            <p className="mb-8 max-w-sm text-base leading-relaxed text-lavender-veil/75 md:text-lg">
-              {service.description}
-            </p>
-            <Link
-              href="/reservar"
-              className="inline-flex items-center rounded-xl border border-white/25 bg-white/10 px-6 py-3 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/20"
-            >
-              Reservar tratamiento
-            </Link>
-          </motion.div>
-        </div>
+        <ServiceSection key={service.id} service={service} index={i} />
       ))}
     </section>
   );

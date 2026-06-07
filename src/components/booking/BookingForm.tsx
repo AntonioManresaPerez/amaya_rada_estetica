@@ -120,14 +120,14 @@ export function BookingForm({ services }: { services: SanityService[] }) {
     setLoadingSlots(true);
     try {
       const dateStr = format(date, "yyyy-MM-dd");
-      const occupied = await getOccupiedSlots(dateStr);
+      const occupied = await getOccupiedSlots(dateStr, selected?.durationMin ?? 60);
       setOccupiedSlots(occupied);
     } catch {
       setOccupiedSlots([]);
     } finally {
       setLoadingSlots(false);
     }
-  }, []);
+  }, [selected]);
 
   const handleServiceSelect = (service: SanityService) => {
     setSelected({

@@ -43,6 +43,13 @@ function checkRateLimit(ip: string): boolean {
   return true;
 }
 
+// ── Helpers ────────────────────────────────────────────────────────────────
+
+function timeToMinutes(t: string): number {
+  const [h, m] = t.split(":").map(Number);
+  return h * 60 + m;
+}
+
 // ── Server Actions ─────────────────────────────────────────────────────────
 
 export async function createReservation(
@@ -76,20 +83,29 @@ export async function createReservation(
     };
   }
 
-  // Verificar que el hueco no está ocupado
-  const { data: existing } = await supabase
+  // Verificar solapamiento con reservas existentes (duración + 15 min de margen)
+  const { data: existingReservations } = await supabase
     .from("reservations")
-    .select("id")
+    .select("appointment_time, duration_min")
     .eq("appointment_date", val.appointmentDate)
-    .eq("appointment_time", val.appointmentTime + ":00")
-    .neq("status", "cancelled")
-    .maybeSingle();
+    .neq("status", "cancelled");
 
-  if (existing) {
+  const BUFFER = 15;
+  const newStart = timeToMinutes(val.appointmentTime);
+  const newEnd = newStart + (val.durationMin ?? 60) + BUFFER;
+
+  const hasConflict = (existingReservations ?? []).some(
+    (r: { appointment_time: string; duration_min: number | null }) => {
+      const existStart = timeToMinutes(r.appointment_time.slice(0, 5));
+      const existEnd = existStart + (r.duration_min ?? 60) + BUFFER;
+      return newStart < existEnd && existStart < newEnd;
+    }
+  );
+
+  if (hasConflict) {
     return {
       success: false,
-      error:
-        "Ese horario acaba de ser reservado. Por favor elige otro.",
+      error: "Ese horario se solapa con una cita existente. Por favor elige otro.",
     };
   }
 
@@ -131,7 +147,12 @@ export async function createReservation(
   return { success: true, id: row.id };
 }
 
-export async function getOccupiedSlots(date: string): Promise<string[]> {
+// newServiceDuration: duración (en min) del servicio que el cliente quiere reservar.
+// Se usa para detectar si empezar en un slot dado terminaría solapando con una reserva posterior.
+export async function getOccupiedSlots(
+  date: string,
+  newServiceDuration = 60
+): Promise<string[]> {
   let supabase;
   try {
     supabase = createAdminClient();
@@ -141,11 +162,39 @@ export async function getOccupiedSlots(date: string): Promise<string[]> {
 
   const { data } = await supabase
     .from("reservations")
-    .select("appointment_time")
+    .select("appointment_time, duration_min")
     .eq("appointment_date", date)
     .neq("status", "cancelled");
 
-  return (data ?? []).map((r: { appointment_time: string }) =>
-    r.appointment_time.slice(0, 5)
-  );
+  const BUFFER = 15;
+  const reservations = (
+    data ?? []
+  ).map((r: { appointment_time: string; duration_min: number | null }) => {
+    const startMin = timeToMinutes(r.appointment_time.slice(0, 5));
+    return {
+      startMin,
+      endMin: startMin + (r.duration_min ?? 60) + BUFFER,
+    };
+  });
+
+  const blocked = new Set<string>();
+
+  // Comprueba todos los slots posibles (10:00–19:00).
+  // generateSlots en el frontend descartará los que no entren en el horario del día.
+  for (let h = 10; h <= 19; h++) {
+    const slotStart = h * 60;
+    const slotEnd = slotStart + newServiceDuration + BUFFER;
+
+    // El slot está bloqueado si se solapa con alguna reserva existente:
+    // [slotStart, slotEnd) ∩ [r.startMin, r.endMin) ≠ ∅
+    const isBlocked = reservations.some(
+      (r) => slotStart < r.endMin && r.startMin < slotEnd
+    );
+
+    if (isBlocked) {
+      blocked.add(`${h.toString().padStart(2, "0")}:00`);
+    }
+  }
+
+  return Array.from(blocked);
 }

@@ -25,7 +25,7 @@ export function AboutSection() {
           <div className="relative aspect-4/5 max-w-md mx-auto">
             {/* Marco decorativo */}
             <div className="absolute -inset-4 rounded-[40%_60%_55%_45%/45%_55%_60%_40%] bg-thistle/25 -z-10" />
-            <div className="h-full w-full rounded-[35%_65%_50%_50%/40%_50%_65%_45%] overflow-hidden bg-lavender-veil">
+            <div className="relative h-full w-full rounded-[35%_65%_50%_50%/40%_50%_65%_45%] overflow-hidden bg-lavender-veil">
               {/*
                 FOTO: coloca tu imagen en public/amaya-rada.webp
                 Recomendado: WebP, 800×1000 px, < 200 KB

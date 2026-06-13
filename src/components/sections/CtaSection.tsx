@@ -4,7 +4,9 @@ import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
+import { Check } from "lucide-react";
 import { fadeUp, staggerContainer } from "@/components/motion/animations";
+import { GoogleRating } from "@/components/sections/GoogleRating";
 import { siteConfig } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 
@@ -76,6 +78,10 @@ export function CtaSection() {
         viewport={{ once: true, margin: "-100px" }}
         className="relative z-10 mx-auto max-w-3xl text-center"
       >
+        <motion.div variants={fadeUp} className="mb-5 flex justify-center text-lavender-veil/90">
+          <GoogleRating />
+        </motion.div>
+
         <motion.p
           variants={fadeUp}
           className="text-sm tracking-[0.3em] uppercase text-lavender-veil/70 mb-4"
@@ -92,10 +98,17 @@ export function CtaSection() {
 
         <motion.p
           variants={fadeUp}
-          className="text-lavender-veil/80 mb-10 text-lg max-w-xl mx-auto"
+          className="text-lavender-veil/80 mb-8 text-lg max-w-xl mx-auto"
         >
-          Déjanos cuidarte con los tratamientos más avanzados. Primera consulta gratuita.
+          Déjanos cuidarte con los tratamientos más avanzados.
         </motion.p>
+
+        <motion.div variants={fadeUp} className="mb-10 flex justify-center">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm font-medium text-lavender-veil backdrop-blur-sm">
+            <Check className="h-4 w-4 text-vintage-lavender" aria-hidden="true" />
+            Primera consulta gratuita
+          </span>
+        </motion.div>
 
         <motion.div variants={fadeUp} className="flex flex-wrap justify-center gap-4">
           <Link

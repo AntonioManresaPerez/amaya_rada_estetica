@@ -73,5 +73,15 @@ export function localBusinessJsonLd() {
     })),
     sameAs: [siteConfig.social.instagram, siteConfig.social.tiktok],
     priceRange: "€€",
+    // Solo se incluye si hay reseñas reales configuradas (evita rich snippets falsos).
+    ...(siteConfig.reviews.count > 0
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: siteConfig.reviews.rating,
+            reviewCount: siteConfig.reviews.count,
+          },
+        }
+      : {}),
   };
 }

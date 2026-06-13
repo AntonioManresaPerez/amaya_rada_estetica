@@ -6,10 +6,10 @@ export const siteConfig = {
   url: "https://amayarada.es",
   locale: "es-ES",
   contact: {
-    phone: "+34604807886",
-    phoneDisplay: "+34 604 807 886",
-    whatsapp: "34604807886",
-    email: "hola@amayarada.es",
+    phone: "+34645625036",
+    phoneDisplay: "+34645625036",
+    whatsapp: "34645625036",
+    email: "dianarada16@hotmail.com",
   },
   address: {
     streetAddress: "Calle Párroco Salvador Pérez, 3",
@@ -38,6 +38,14 @@ export const siteConfig = {
   social: {
     instagram: "https://www.instagram.com/amaya_rada_estetica/",
     tiktok: "https://www.tiktok.com/@amaya_rada_estetica",
+  },
+  // Valoración de Google. Rellena con tus datos REALES para activar las
+  // estrellas en la web y en los resultados de búsqueda (aggregateRating).
+  // Déjalo en 0 mientras no tengas reseñas: así no se muestra nada.
+  reviews: {
+    rating: 0, // p. ej. 4.9
+    count: 0, // nº de reseñas, p. ej. 87
+    url: "", // enlace a tu ficha/reseñas de Google
   },
 } as const;
 

@@ -11,7 +11,7 @@ const N = 8;
 const pexelsUrl = (id: number) =>
   `${CDN}/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop`;
 const pexelsMobile = (id: number) =>
-  `${CDN}/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200&fit=crop`;
+  `${CDN}/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=900&h=1600&fit=crop`;
 
 const services = [
   { id: "dermapen",       number: "01", title: "Dermapen",              subtitle: "Microagujas",         description: "Estimula la producción de colágeno y renueva la piel mediante microcanales de precisión para un efecto rejuvenecedor visible.",              photoId: 30809949, alt: "Tratamiento dermapen facial",              flexCls: "items-end justify-start",                              padCls: "pb-16 md:pb-24",              alignCls: ""               },
@@ -38,7 +38,7 @@ function ServiceSlide({ service, active, eager }: { service: (typeof services)[n
       </div>
       <div className="absolute inset-0 bg-linear-to-b from-deep-space/60 via-transparent to-transparent" />
       <div className="absolute inset-0 bg-linear-to-t from-deep-space/90 via-deep-space/20 to-transparent" />
-      <span aria-hidden className="absolute right-6 top-1/2 -translate-y-1/2 select-none pointer-events-none font-serif leading-none text-white/5 text-[9rem] md:text-[17rem]">
+      <span aria-hidden className="absolute right-4 top-1/2 -translate-y-1/2 select-none pointer-events-none font-serif leading-none text-white/5 text-[7rem] md:right-6 md:text-[17rem]">
         {service.number}
       </span>
       {/* Banda central — mantiene los textos cerca del centro, no pegados a los bordes */}
@@ -49,10 +49,10 @@ function ServiceSlide({ service, active, eager }: { service: (typeof services)[n
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: active ? 0.2 : 0 }}
           className={`relative z-10 max-w-xl ${service.padCls} ${service.alignCls}`}
         >
-          <div className={`mb-4 h-px w-16 bg-vintage-lavender/80 ${isRight ? "md:ml-auto" : isCenter ? "mx-auto" : ""}`} />
-          <p className="mb-3 text-sm tracking-[0.35em] uppercase text-lavender-veil/60">{service.number} &mdash; {service.subtitle}</p>
-          <h2 className="mb-5 font-serif text-6xl leading-[0.95] text-white md:text-8xl">{service.title}</h2>
-          <p className={`mb-8 max-w-md text-base leading-relaxed text-lavender-veil/80 md:text-lg ${isRight ? "md:ml-auto" : isCenter ? "mx-auto" : ""}`}>{service.description}</p>
+          <div className={`mb-3.5 h-px w-12 bg-vintage-lavender/80 sm:w-16 md:mb-4 ${isRight ? "md:ml-auto" : isCenter ? "mx-auto" : ""}`} />
+          <p className="mb-2.5 text-xs tracking-[0.3em] uppercase text-lavender-veil/65 sm:mb-3 sm:text-sm sm:tracking-[0.35em]">{service.number} &mdash; {service.subtitle}</p>
+          <h2 className="mb-4 font-serif text-[2.75rem] leading-[1.03] text-white sm:text-6xl sm:leading-[0.95] md:mb-5 md:text-8xl">{service.title}</h2>
+          <p className={`mb-6 max-w-md text-[0.95rem] leading-relaxed text-lavender-veil/85 sm:text-base md:mb-8 md:text-lg ${isRight ? "md:ml-auto" : isCenter ? "mx-auto" : ""}`}>{service.description}</p>
           <Link href="/reservar" className="inline-flex items-center rounded-xl border border-white/25 bg-white/10 px-7 py-3.5 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/20">
             Reservar tratamiento
           </Link>

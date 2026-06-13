@@ -36,13 +36,16 @@ Barato, bajo riesgo, momento ideal antes de tener tráfico.
 
 ## Frente B — Conversión y confianza (sector estética) (P1)
 
-- [ ] Reseñas de Google visibles + `aggregateRating` en el JSON-LD (estrellas en el buscador).
-- [ ] Precios visibles en las tarjetas de servicio (hoy solo aparecen dentro del formulario de
-      reserva).
-- [ ] Bonos / packs de sesiones (p. ej. "5 sesiones −15 %") y **tarjetas regalo**.
-- [ ] Seña/depósito anti-no-show (Stripe) en tratamientos caros (opcional).
-- [ ] CTA "Reservar" fija en móvil (barra inferior) y "primera consulta gratuita" más prominente.
-- [ ] Confirmación por WhatsApp además de por email.
+- [x] Reseñas de Google + `aggregateRating` en el JSON-LD: mecanismo listo. **Falta** rellenar
+      `siteConfig.reviews` (rating, count, url) con datos reales para activar estrellas + badge.
+- [x] Precios visibles en las tarjetas de servicio (`/servicios` ya muestra "Desde X€" + duración).
+      **Falta** rellenar el precio de cada servicio en Sanity.
+- [x] CTA "Reservar" fija en móvil (barra inferior en páginas internas).
+- [x] "Primera consulta gratuita" destacada (distintivo en la sección de reserva).
+- [ ] Bonos / packs de sesiones (p. ej. "5 sesiones −15 %") y **tarjetas regalo**
+      (requiere definir packs y precios; valorar pasarela de pago).
+- [ ] Seña/depósito anti-no-show (Stripe) en tratamientos caros (requiere cuenta Stripe).
+- [ ] Confirmación por WhatsApp automatizada además de por email (requiere WhatsApp Business API).
 
 ---
 

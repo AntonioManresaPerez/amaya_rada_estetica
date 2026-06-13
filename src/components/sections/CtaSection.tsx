@@ -57,11 +57,12 @@ export function CtaSection() {
 
   return (
     <section id="reservar-cita" className="relative overflow-hidden py-16 md:py-24 px-6 bg-linear-to-br from-indigo-velvet to-deep-space">
-      {/* Fundido con la sección anterior (clara) — solo móvil: Sobre mí → Reservar cita */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-linear-to-b from-lavender-veil/45 via-thistle/15 to-transparent md:hidden"
-      />
+      {/* Fundido Sobre mí → Reservar cita (escritorio y móvil): velo claro con
+          destello lavanda/thistle que se disuelve en el índigo */}
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-40 overflow-hidden">
+        <div className="absolute left-1/2 -top-24 h-48 w-[150%] -translate-x-1/2 rounded-[50%] bg-radial from-lavender-veil/45 via-thistle/20 to-transparent blur-3xl" />
+        <div className="absolute inset-x-0 top-0 h-32 bg-linear-to-b from-lavender-veil/40 via-thistle/12 to-transparent" />
+      </div>
       {/* Fundido de color hacia el footer (escritorio y móvil): destello malva/índigo
           que se asienta en deep-space para empalmar sin corte con el footer */}
       <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-56 overflow-hidden">

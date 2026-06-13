@@ -24,16 +24,17 @@ const services = [
   { id: "vacum",          number: "08", title: "Vacum",                 subtitle: "Masaje aspirativo",   description: "Técnica de vacío que tonifica, modela y reactiva la circulación en zonas con celulitis y flacidez.",                                          photoId: 8312823,  alt: "Vacum masaje aspirativo",                 flexCls: "items-end justify-start md:items-center",              padCls: "pb-16 md:pb-0",               alignCls: ""               },
 ];
 
-function ServiceSlide({ service, active }: { service: (typeof services)[number]; active: boolean }) {
+function ServiceSlide({ service, active, eager }: { service: (typeof services)[number]; active: boolean; eager: boolean }) {
   const isRight = service.alignCls.includes("text-right");
   const isCenter = service.alignCls.includes("text-center");
+  const loading = eager ? "eager" : "lazy";
   return (
     <div className="absolute inset-0 bg-deep-space">
       <div className="absolute inset-x-0 top-[-5%] bottom-[-5%]">
         {/* Portrait crop for mobile — fills the tall viewport without awkward landscape slicing */}
-        <Image src={pexelsMobile(service.photoId)} alt={service.alt} fill className="object-cover md:hidden" sizes="(max-width: 767px) 100vw, 1px" loading="eager" />
+        <Image src={pexelsMobile(service.photoId)} alt={service.alt} fill className="object-cover md:hidden" sizes="(max-width: 767px) 100vw, 1px" loading={loading} />
         {/* Landscape crop for tablet/desktop */}
-        <Image src={pexelsUrl(service.photoId)} alt={service.alt} fill className="object-cover hidden md:block" sizes="(min-width: 768px) 100vw, 1px" loading="eager" />
+        <Image src={pexelsUrl(service.photoId)} alt={service.alt} fill className="object-cover hidden md:block" sizes="(min-width: 768px) 100vw, 1px" loading={loading} />
       </div>
       <div className="absolute inset-0 bg-linear-to-b from-deep-space/60 via-transparent to-transparent" />
       <div className="absolute inset-0 bg-linear-to-t from-deep-space/90 via-deep-space/20 to-transparent" />
@@ -66,11 +67,16 @@ const isMobile = () => typeof window !== "undefined" && window.innerWidth < 768;
 
 export function ServicesFullscreenSection() {
   const [current, setCurrent] = useState(0);
+  const [isMobileView, setIsMobileView] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  const [dragX, setDragX] = useState(0);
   const currentRef = useRef(0);
   const lockRef = useRef(false);
   const sectionRef = useRef<HTMLDivElement>(null);
   const curtainP = useMotionValue(-1); // -1 = above | 0 = covering | 1 = below
   const curtainY = useTransform(curtainP, [-1, 0, 1], ["-100%", "0%", "100%"]);
+
+  const setIdx = (idx: number) => { currentRef.current = idx; setCurrent(idx); };
 
   const runAnim = useCallback(
     (to: number) =>
@@ -78,51 +84,39 @@ export function ServicesFullscreenSection() {
     [curtainP],
   );
 
-  // Is the section filling the viewport right now?
   const isInSection = useCallback(() => {
     const r = sectionRef.current?.getBoundingClientRect();
     if (!r) return false;
     return r.top > -80 && r.top < 80 && r.bottom > window.innerHeight - 80;
   }, []);
 
-  // Is the section just off-screen and about to enter?
   const isApproaching = useCallback((down: boolean) => {
     const r = sectionRef.current?.getBoundingClientRect();
     if (!r) return false;
     const vh = window.innerHeight;
-    if (down && r.top > 10 && r.top < vh + 50) return true;   // coming from Hero
-    if (!down && r.bottom > -50 && r.bottom < 100) return true; // coming from About
+    if (down && r.top > 10 && r.top < vh + 50) return true;
+    if (!down && r.bottom > -50 && r.bottom < 100) return true;
     return false;
   }, []);
 
-  // Transition between services
+  // Desktop — transición entre servicios con telón
   const goTo = useCallback((idx: number, dir: 1 | -1) => {
     if (lockRef.current) return;
     lockRef.current = true;
     window.dispatchEvent(new Event("curtain:open"));
-    if (isMobile()) {
-      setCurrent(idx); currentRef.current = idx;
-      setTimeout(() => { lockRef.current = false; window.dispatchEvent(new Event("curtain:settle-in")); }, 500);
-      return;
-    }
     curtainP.set(dir > 0 ? -1 : 1);
     runAnim(0)
-      .then(() => { setCurrent(idx); currentRef.current = idx; })
+      .then(() => { setIdx(idx); })
       .then(() => new Promise<void>(r => setTimeout(r, 100)))
       .then(() => runAnim(dir > 0 ? 1 : -1))
       .then(() => { lockRef.current = false; window.dispatchEvent(new Event("curtain:settle-in")); });
   }, [curtainP, runAnim]);
 
-  // Transition to a different page section (Hero or About) — scrolls while curtain covers
+  // Desktop — transición a otra sección (Hero / About) con telón
   const goExternal = useCallback((scrollFn: () => void, dir: 1 | -1) => {
     if (lockRef.current) return;
     lockRef.current = true;
     window.dispatchEvent(new Event("curtain:open"));
-    if (isMobile()) {
-      scrollFn();
-      setTimeout(() => { lockRef.current = false; window.dispatchEvent(new Event("curtain:settle-out")); }, 300);
-      return;
-    }
     curtainP.set(dir > 0 ? -1 : 1);
     runAnim(0)
       .then(() => { scrollFn(); return new Promise<void>(r => setTimeout(r, 80)); })
@@ -130,17 +124,11 @@ export function ServicesFullscreenSection() {
       .then(() => { lockRef.current = false; window.dispatchEvent(new Event("curtain:settle-out")); });
   }, [curtainP, runAnim]);
 
-  // Enter section from Hero or About — curtain covers, snap section to viewport, reveal
+  // Desktop — entrar a la sección con telón
   const enterSection = useCallback((dir: 1 | -1) => {
     if (lockRef.current) return;
     lockRef.current = true;
     window.dispatchEvent(new Event("curtain:open"));
-    if (isMobile()) {
-      const el = sectionRef.current;
-      if (el) window.scrollTo(0, absTop(el));
-      setTimeout(() => { lockRef.current = false; window.dispatchEvent(new Event("curtain:settle-in")); }, 300);
-      return;
-    }
     curtainP.set(dir > 0 ? -1 : 1);
     runAnim(0).then(() => {
       const el = sectionRef.current;
@@ -150,28 +138,30 @@ export function ServicesFullscreenSection() {
       .then(() => { lockRef.current = false; window.dispatchEvent(new Event("curtain:settle-in")); });
   }, [curtainP, runAnim]);
 
+  // Seleccionar slide desde los puntos: móvil → deslizamiento suave; escritorio → telón
+  const selectSlide = (i: number) => {
+    const idx = currentRef.current;
+    if (i === idx || lockRef.current) return;
+    if (isMobile()) setIdx(i);
+    else goTo(i, i > idx ? 1 : -1);
+  };
+
+  // Escritorio: rueda + teclado + transiciones con secciones vecinas
   useEffect(() => {
-    let touchY = 0;
-
     const onWheel = (e: WheelEvent) => {
+      if (window.innerWidth < 768) return; // móvil usa el carrusel táctil
       const down = e.deltaY > 0;
-
       if (isApproaching(down) && !isInSection()) {
         e.preventDefault();
         enterSection(down ? 1 : -1);
         return;
       }
       if (!isInSection()) return;
-
-      e.preventDefault(); // hold the page in place while inside the section
+      e.preventDefault();
       if (lockRef.current) return;
-
       const idx = currentRef.current;
       if (down && idx >= N - 1) {
-        goExternal(() => {
-          const el = document.getElementById("sobre-mi");
-          if (el) window.scrollTo(0, absTop(el));
-        }, 1);
+        goExternal(() => { const el = document.getElementById("sobre-mi"); if (el) window.scrollTo(0, absTop(el)); }, 1);
       } else if (!down && idx <= 0) {
         goExternal(() => window.scrollTo(0, 0), -1);
       } else {
@@ -179,85 +169,125 @@ export function ServicesFullscreenSection() {
       }
     };
 
-    const onTouchStart = (e: TouchEvent) => { touchY = e.touches[0].clientY; };
-    const onTouchEnd = (e: TouchEvent) => {
-      if (!isInSection() || lockRef.current) return;
-      const delta = touchY - e.changedTouches[0].clientY;
-      if (Math.abs(delta) < 40) return;
-      const down = delta > 0;
-      const idx = currentRef.current;
-      if (down && idx >= N - 1) goExternal(() => { const el = document.getElementById("sobre-mi"); if (el) window.scrollTo(0, absTop(el)); }, 1);
-      else if (!down && idx <= 0) goExternal(() => window.scrollTo(0, 0), -1);
-      else goTo(idx + (down ? 1 : -1), down ? 1 : -1);
-    };
-
     const onKey = (e: KeyboardEvent) => {
-      if (!isInSection() || lockRef.current) return;
+      if (window.innerWidth < 768 || !isInSection() || lockRef.current) return;
       const idx = currentRef.current;
-      if ((e.key === "ArrowDown" || e.key === "PageDown") && idx < N - 1) { e.preventDefault(); goTo(idx + 1, 1); }
-      if ((e.key === "ArrowUp" || e.key === "PageUp") && idx > 0) { e.preventDefault(); goTo(idx - 1, -1); }
+      if ((e.key === "ArrowDown" || e.key === "PageDown" || e.key === "ArrowRight") && idx < N - 1) { e.preventDefault(); goTo(idx + 1, 1); }
+      if ((e.key === "ArrowUp" || e.key === "PageUp" || e.key === "ArrowLeft") && idx > 0) { e.preventDefault(); goTo(idx - 1, -1); }
     };
 
     const onAboutExitDown = () => {
       if (lockRef.current) return;
-      goExternal(() => {
-        const el = document.getElementById("reservar-cita");
-        if (el) window.scrollTo(0, absTop(el));
-      }, 1);
+      goExternal(() => { const el = document.getElementById("reservar-cita"); if (el) window.scrollTo(0, absTop(el)); }, 1);
     };
-
     const onCtaExitUp = () => {
       if (lockRef.current) return;
-      goExternal(() => {
-        const el = document.getElementById("sobre-mi");
-        if (el) window.scrollTo(0, absTop(el));
-      }, -1);
+      goExternal(() => { const el = document.getElementById("sobre-mi"); if (el) window.scrollTo(0, absTop(el)); }, -1);
     };
 
     window.addEventListener("wheel", onWheel, { passive: false });
-    window.addEventListener("touchstart", onTouchStart, { passive: true });
-    window.addEventListener("touchend", onTouchEnd, { passive: true });
     window.addEventListener("keydown", onKey);
     window.addEventListener("about:exit-down", onAboutExitDown);
     window.addEventListener("cta:exit-up", onCtaExitUp);
     return () => {
       window.removeEventListener("wheel", onWheel);
-      window.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchend", onTouchEnd);
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("about:exit-down", onAboutExitDown);
       window.removeEventListener("cta:exit-up", onCtaExitUp);
     };
   }, [isInSection, isApproaching, enterSection, goTo, goExternal]);
 
-  return (
-    <section ref={sectionRef} className="relative h-screen overflow-hidden bg-deep-space">
-      {/* Window of mounted slides (current ± 1) — the neighbour is preloaded so the
-          next transition reveals an image that is already in cache. */}
-      {services.map((service, i) => {
-        if (Math.abs(i - current) > 1) return null;
-        const isCurrent = i === current;
-        return (
-          <motion.div
-            key={service.id}
-            initial={false}
-            animate={{ opacity: isCurrent ? 1 : 0 }}
-            transition={{ duration: 0.35, ease: "easeInOut" }}
-            style={{ zIndex: isCurrent ? 10 : 0 }}
-            className={`absolute inset-0 ${isCurrent ? "" : "pointer-events-none"}`}
-          >
-            <ServiceSlide service={service} active={isCurrent} />
-          </motion.div>
-        );
-      })}
+  // Móvil: carrusel horizontal arrastrable con el dedo (scroll vertical natural)
+  useEffect(() => {
+    const update = () => setIsMobileView(window.innerWidth < 768);
+    update();
+    window.addEventListener("resize", update);
 
-      {/* Curtain — desktop only; on mobile the opacity crossfade above handles the transition */}
+    const el = sectionRef.current;
+    const drag = { startX: 0, startY: 0, dx: 0, axis: null as null | "x" | "y", active: false, t0: 0 };
+
+    const onStart = (e: TouchEvent) => {
+      if (window.innerWidth >= 768) return;
+      const t = e.touches[0];
+      drag.startX = t.clientX; drag.startY = t.clientY; drag.dx = 0; drag.axis = null; drag.active = true; drag.t0 = Date.now();
+    };
+    const onMove = (e: TouchEvent) => {
+      if (!drag.active) return;
+      const t = e.touches[0];
+      const dx = t.clientX - drag.startX;
+      const dy = t.clientY - drag.startY;
+      if (drag.axis === null) {
+        if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
+          drag.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+          if (drag.axis === "x") setDragging(true);
+        } else return;
+      }
+      if (drag.axis === "x") {
+        e.preventDefault(); // bloquea el scroll vertical mientras arrastra horizontalmente
+        let off = dx;
+        const idx = currentRef.current;
+        if ((idx === 0 && off > 0) || (idx === N - 1 && off < 0)) off *= 0.35; // resistencia en los extremos
+        drag.dx = off;
+        setDragX(off);
+      }
+    };
+    const onEnd = () => {
+      if (!drag.active) return;
+      drag.active = false;
+      if (drag.axis !== "x") return;
+      setDragging(false);
+      const w = window.innerWidth;
+      const v = Math.abs(drag.dx) / Math.max(Date.now() - drag.t0, 1);
+      const idx = currentRef.current;
+      let target = idx;
+      if ((drag.dx <= -w * 0.18 || (drag.dx < -30 && v > 0.5)) && idx < N - 1) target = idx + 1;
+      else if ((drag.dx >= w * 0.18 || (drag.dx > 30 && v > 0.5)) && idx > 0) target = idx - 1;
+      setDragX(0);
+      if (target !== idx) setIdx(target);
+    };
+
+    el?.addEventListener("touchstart", onStart, { passive: true });
+    el?.addEventListener("touchmove", onMove, { passive: false });
+    el?.addEventListener("touchend", onEnd, { passive: true });
+    return () => {
+      window.removeEventListener("resize", update);
+      el?.removeEventListener("touchstart", onStart);
+      el?.removeEventListener("touchmove", onMove);
+      el?.removeEventListener("touchend", onEnd);
+    };
+  }, []);
+
+  return (
+    <section
+      ref={sectionRef}
+      className="relative h-screen overflow-hidden bg-deep-space"
+      style={{ touchAction: isMobileView ? "pan-y" : undefined }}
+    >
+      {/* Carril horizontal de servicios — en móvil sigue al dedo; en escritorio salta tras el telón */}
+      <div
+        className="flex h-full w-full"
+        style={{
+          transform: `translateX(calc(${-current * 100}% + ${dragX}px))`,
+          transition: isMobileView && !dragging ? "transform 0.45s cubic-bezier(0.22, 1, 0.36, 1)" : "none",
+        }}
+      >
+        {services.map((service, i) => (
+          <div key={service.id} className="relative h-full w-full shrink-0">
+            <ServiceSlide
+              service={service}
+              active={i === current || isMobileView}
+              eager={Math.abs(i - current) <= 1}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* Telón — solo escritorio */}
       <motion.div style={{ y: curtainY }} className="fixed inset-0 z-49 hidden overflow-hidden md:block bg-linear-to-b from-lavender-veil via-[#f0e8f6] to-background pointer-events-none">
         <CurtainDecor />
       </motion.div>
 
-      {/* Progress dots — row on mobile, column on desktop.
-          On desktop each shows a label on hover and grows for an easy click target. */}
+      {/* Indicadores — fila en móvil, columna en escritorio */}
       <nav
         aria-label="Navegación de servicios"
         className="absolute bottom-6 right-4 z-20 flex flex-row gap-2 md:flex-col md:bottom-auto md:top-1/2 md:-translate-y-1/2 md:right-6 md:gap-1"
@@ -269,14 +299,12 @@ export function ServicesFullscreenSection() {
               key={s.id}
               aria-label={`Ir a ${s.title}`}
               aria-current={isActive ? "true" : undefined}
-              onClick={() => { const idx = currentRef.current; if (i !== idx && !lockRef.current) goTo(i, i > idx ? 1 : -1); }}
-              className="group relative flex items-center justify-center md:p-2"
+              onClick={() => selectSlide(i)}
+              className="group relative flex items-center justify-center p-1.5 md:p-2"
             >
-              {/* Etiqueta del servicio — aparece al pasar el ratón (escritorio) */}
               <span className="pointer-events-none absolute right-full mr-1 hidden whitespace-nowrap rounded-full bg-deep-space/85 px-3 py-1 text-xs font-medium text-white opacity-0 -translate-x-1 backdrop-blur-sm transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 md:block">
                 {s.title}
               </span>
-              {/* Punto */}
               <span
                 className={`block rounded-full transition-all duration-300 ${
                   isActive

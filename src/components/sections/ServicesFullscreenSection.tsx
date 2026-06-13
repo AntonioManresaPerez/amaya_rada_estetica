@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, AnimatePresence, useMotionValue, useTransform, animate } from "framer-motion";
+import { motion, useMotionValue, useTransform, animate } from "framer-motion";
+import { CurtainDecor } from "@/components/decor/CurtainDecor";
 
 const CDN = "https://images.pexels.com/photos";
 const N = 8;
@@ -13,40 +14,48 @@ const pexelsMobile = (id: number) =>
   `${CDN}/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200&fit=crop`;
 
 const services = [
-  { id: "dermapen",       number: "01", title: "Dermapen",              subtitle: "Microagujas",         description: "Estimula la producción de colágeno y renueva la piel mediante microcanales de precisión para un efecto rejuvenecedor visible.",              photoId: 30809949, alt: "Tratamiento dermapen facial",              flexCls: "items-end justify-start",                              padCls: "px-6 pb-16 md:pl-20 md:pb-24",              alignCls: ""               },
-  { id: "higiene-facial", number: "02", title: "Higiene Facial",        subtitle: "Limpieza profunda",   description: "Elimina impurezas, puntos negros y células muertas dejando tu piel luminosa, purificada y perfectamente oxigenada.",                          photoId: 3985329,  alt: "Higiene facial profunda",                 flexCls: "items-end justify-start md:justify-end",               padCls: "px-6 pb-16 md:pl-0 md:pr-20 md:pb-24",      alignCls: "md:text-right"  },
-  { id: "laser",          number: "03", title: "Láser",                 subtitle: "Tecnología avanzada", description: "Tratamiento de alta precisión para eliminar vello no deseado, manchas y estimular la regeneración cutánea.",                                  photoId: 4586726,  alt: "Tratamiento láser estético",              flexCls: "items-end justify-start md:items-center",              padCls: "px-6 pb-16 md:pl-20 md:pb-0",               alignCls: ""               },
-  { id: "pedicura",       number: "04", title: "Pedicura",              subtitle: "Cuidado del pie",     description: "Tratamiento completo de higiene y embellecimiento del pie para mantenerlos sanos, suaves e impecables.",                                       photoId: 34930123, alt: "Pedicura profesional",                    flexCls: "items-end justify-start md:items-start md:justify-end", padCls: "px-6 pb-16 md:pl-0 md:pr-20 md:pb-0 md:pt-32", alignCls: "md:text-right" },
-  { id: "maderoterapia",  number: "05", title: "Maderoterapia",         subtitle: "Masaje con maderas",  description: "Técnica de masaje con instrumentos de madera que reduce la celulitis, tonifica y esculpe el cuerpo de forma natural.",                         photoId: 6628691,  alt: "Maderoterapia masaje corporal",           flexCls: "items-end justify-start",                              padCls: "px-6 pb-16 md:pl-20 md:pb-24",              alignCls: ""               },
-  { id: "presoterapia",   number: "06", title: "Presoterapia",          subtitle: "Drenaje linfático",   description: "Mejora la circulación, reduce la retención de líquidos y combate la celulitis mediante presión controlada.",                                   photoId: 5888064,  alt: "Presoterapia drenaje linfático",          flexCls: "items-end justify-start md:items-center md:justify-end",padCls: "px-6 pb-16 md:pl-0 md:pr-20 md:pb-0",       alignCls: "md:text-right"  },
-  { id: "manchas",        number: "07", title: "Tratamiento de Manchas",subtitle: "Uniformidad cutánea", description: "Reduce y elimina manchas, hiperpigmentación y daño solar para recuperar una piel más uniforme y radiante.",                                   photoId: 5701545,  alt: "Tratamiento de manchas",                  flexCls: "items-end justify-start md:justify-center",            padCls: "px-6 pb-16 md:pb-24",                        alignCls: "md:text-center" },
-  { id: "vacum",          number: "08", title: "Vacum",                 subtitle: "Masaje aspirativo",   description: "Técnica de vacío que tonifica, modela y reactiva la circulación en zonas con celulitis y flacidez.",                                          photoId: 8312823,  alt: "Vacum masaje aspirativo",                 flexCls: "items-end justify-start md:items-center",              padCls: "px-6 pb-16 md:pl-20 md:pb-0",               alignCls: ""               },
+  { id: "dermapen",       number: "01", title: "Dermapen",              subtitle: "Microagujas",         description: "Estimula la producción de colágeno y renueva la piel mediante microcanales de precisión para un efecto rejuvenecedor visible.",              photoId: 30809949, alt: "Tratamiento dermapen facial",              flexCls: "items-end justify-start",                              padCls: "pb-16 md:pb-24",              alignCls: ""               },
+  { id: "higiene-facial", number: "02", title: "Higiene Facial",        subtitle: "Limpieza profunda",   description: "Elimina impurezas, puntos negros y células muertas dejando tu piel luminosa, purificada y perfectamente oxigenada.",                          photoId: 3985329,  alt: "Higiene facial profunda",                 flexCls: "items-end justify-start md:justify-end",               padCls: "pb-16 md:pb-24",      alignCls: "md:text-right"  },
+  { id: "laser",          number: "03", title: "Láser",                 subtitle: "Tecnología avanzada", description: "Tratamiento de alta precisión para eliminar vello no deseado, manchas y estimular la regeneración cutánea.",                                  photoId: 4586726,  alt: "Tratamiento láser estético",              flexCls: "items-end justify-start md:items-center",              padCls: "pb-16 md:pb-0",               alignCls: ""               },
+  { id: "pedicura",       number: "04", title: "Pedicura",              subtitle: "Cuidado del pie",     description: "Tratamiento completo de higiene y embellecimiento del pie para mantenerlos sanos, suaves e impecables.",                                       photoId: 34930123, alt: "Pedicura profesional",                    flexCls: "items-end justify-start md:items-start md:justify-end", padCls: "pb-16 md:pb-0 md:pt-32", alignCls: "md:text-right" },
+  { id: "maderoterapia",  number: "05", title: "Maderoterapia",         subtitle: "Masaje con maderas",  description: "Técnica de masaje con instrumentos de madera que reduce la celulitis, tonifica y esculpe el cuerpo de forma natural.",                         photoId: 6628691,  alt: "Maderoterapia masaje corporal",           flexCls: "items-end justify-start",                              padCls: "pb-16 md:pb-24",              alignCls: ""               },
+  { id: "presoterapia",   number: "06", title: "Presoterapia",          subtitle: "Drenaje linfático",   description: "Mejora la circulación, reduce la retención de líquidos y combate la celulitis mediante presión controlada.",                                   photoId: 5888064,  alt: "Presoterapia drenaje linfático",          flexCls: "items-end justify-start md:items-center md:justify-end",padCls: "pb-16 md:pb-0",       alignCls: "md:text-right"  },
+  { id: "manchas",        number: "07", title: "Tratamiento de Manchas",subtitle: "Uniformidad cutánea", description: "Reduce y elimina manchas, hiperpigmentación y daño solar para recuperar una piel más uniforme y radiante.",                                   photoId: 5701545,  alt: "Tratamiento de manchas",                  flexCls: "items-end justify-start md:justify-center",            padCls: "pb-16 md:pb-24",                        alignCls: "md:text-center" },
+  { id: "vacum",          number: "08", title: "Vacum",                 subtitle: "Masaje aspirativo",   description: "Técnica de vacío que tonifica, modela y reactiva la circulación en zonas con celulitis y flacidez.",                                          photoId: 8312823,  alt: "Vacum masaje aspirativo",                 flexCls: "items-end justify-start md:items-center",              padCls: "pb-16 md:pb-0",               alignCls: ""               },
 ];
 
-function ServiceSlide({ service }: { service: (typeof services)[number] }) {
+function ServiceSlide({ service, active }: { service: (typeof services)[number]; active: boolean }) {
   const isRight = service.alignCls.includes("text-right");
   const isCenter = service.alignCls.includes("text-center");
   return (
-    <div className={`absolute inset-0 flex bg-deep-space ${service.flexCls}`}>
+    <div className="absolute inset-0 bg-deep-space">
       <div className="absolute inset-x-0 top-[-5%] bottom-[-5%]">
         {/* Portrait crop for mobile — fills the tall viewport without awkward landscape slicing */}
-        <Image src={pexelsMobile(service.photoId)} alt={service.alt} fill className="object-cover md:hidden" sizes="(max-width: 767px) 100vw, 1px" priority />
+        <Image src={pexelsMobile(service.photoId)} alt={service.alt} fill className="object-cover md:hidden" sizes="(max-width: 767px) 100vw, 1px" loading="eager" />
         {/* Landscape crop for tablet/desktop */}
-        <Image src={pexelsUrl(service.photoId)} alt={service.alt} fill className="object-cover hidden md:block" sizes="(min-width: 768px) 100vw, 1px" priority />
+        <Image src={pexelsUrl(service.photoId)} alt={service.alt} fill className="object-cover hidden md:block" sizes="(min-width: 768px) 100vw, 1px" loading="eager" />
       </div>
       <div className="absolute inset-0 bg-linear-to-b from-deep-space/60 via-transparent to-transparent" />
       <div className="absolute inset-0 bg-linear-to-t from-deep-space/90 via-deep-space/20 to-transparent" />
-      <span aria-hidden className="absolute right-6 top-1/2 -translate-y-1/2 select-none pointer-events-none font-serif leading-none text-white/5 text-[8rem] md:text-[15rem]">
+      <span aria-hidden className="absolute right-6 top-1/2 -translate-y-1/2 select-none pointer-events-none font-serif leading-none text-white/5 text-[9rem] md:text-[17rem]">
         {service.number}
       </span>
-      <div className={`relative z-10 max-w-lg ${service.padCls} ${service.alignCls}`}>
-        <div className={`mb-4 h-px w-14 bg-vintage-lavender/80 ${isRight ? "md:ml-auto" : isCenter ? "mx-auto" : ""}`} />
-        <p className="mb-2 text-xs tracking-[0.35em] uppercase text-lavender-veil/55">{service.number} &mdash; {service.subtitle}</p>
-        <h2 className="mb-4 font-serif text-5xl leading-none text-white md:text-7xl">{service.title}</h2>
-        <p className={`mb-8 max-w-sm text-sm leading-relaxed text-lavender-veil/75 md:text-base ${isRight ? "md:ml-auto" : isCenter ? "mx-auto" : ""}`}>{service.description}</p>
-        <Link href="/reservar" className="inline-flex items-center rounded-xl border border-white/25 bg-white/10 px-6 py-3 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/20">
-          Reservar tratamiento
-        </Link>
+      {/* Banda central — mantiene los textos cerca del centro, no pegados a los bordes */}
+      <div className={`absolute inset-y-0 left-1/2 -translate-x-1/2 flex w-full max-w-5xl px-6 ${service.flexCls}`}>
+        <motion.div
+          initial={false}
+          animate={active ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: active ? 0.2 : 0 }}
+          className={`relative z-10 max-w-xl ${service.padCls} ${service.alignCls}`}
+        >
+          <div className={`mb-4 h-px w-16 bg-vintage-lavender/80 ${isRight ? "md:ml-auto" : isCenter ? "mx-auto" : ""}`} />
+          <p className="mb-3 text-sm tracking-[0.35em] uppercase text-lavender-veil/60">{service.number} &mdash; {service.subtitle}</p>
+          <h2 className="mb-5 font-serif text-6xl leading-[0.95] text-white md:text-8xl">{service.title}</h2>
+          <p className={`mb-8 max-w-md text-base leading-relaxed text-lavender-veil/80 md:text-lg ${isRight ? "md:ml-auto" : isCenter ? "mx-auto" : ""}`}>{service.description}</p>
+          <Link href="/reservar" className="inline-flex items-center rounded-xl border border-white/25 bg-white/10 px-7 py-3.5 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/20">
+            Reservar tratamiento
+          </Link>
+        </motion.div>
       </div>
     </div>
   );
@@ -223,35 +232,61 @@ export function ServicesFullscreenSection() {
 
   return (
     <section ref={sectionRef} className="relative h-screen overflow-hidden bg-deep-space">
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={services[current].id}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.35, ease: "easeInOut" }}
-          className="absolute inset-0"
-        >
-          <ServiceSlide service={services[current]} />
-        </motion.div>
-      </AnimatePresence>
+      {/* Window of mounted slides (current ± 1) — the neighbour is preloaded so the
+          next transition reveals an image that is already in cache. */}
+      {services.map((service, i) => {
+        if (Math.abs(i - current) > 1) return null;
+        const isCurrent = i === current;
+        return (
+          <motion.div
+            key={service.id}
+            initial={false}
+            animate={{ opacity: isCurrent ? 1 : 0 }}
+            transition={{ duration: 0.35, ease: "easeInOut" }}
+            style={{ zIndex: isCurrent ? 10 : 0 }}
+            className={`absolute inset-0 ${isCurrent ? "" : "pointer-events-none"}`}
+          >
+            <ServiceSlide service={service} active={isCurrent} />
+          </motion.div>
+        );
+      })}
 
-      {/* Curtain — desktop only; on mobile AnimatePresence crossfade handles the transition */}
-      <motion.div style={{ y: curtainY }} className="fixed inset-0 z-49 hidden md:block bg-linear-to-b from-lavender-veil via-[#f0e8f6] to-background pointer-events-none" />
+      {/* Curtain — desktop only; on mobile the opacity crossfade above handles the transition */}
+      <motion.div style={{ y: curtainY }} className="fixed inset-0 z-49 hidden overflow-hidden md:block bg-linear-to-b from-lavender-veil via-[#f0e8f6] to-background pointer-events-none">
+        <CurtainDecor />
+      </motion.div>
 
-      {/* Progress dots — row on mobile, column on desktop */}
+      {/* Progress dots — row on mobile, column on desktop.
+          On desktop each shows a label on hover and grows for an easy click target. */}
       <nav
         aria-label="Navegación de servicios"
-        className="absolute bottom-6 right-4 z-20 flex flex-row gap-2 md:flex-col md:bottom-auto md:top-1/2 md:-translate-y-1/2 md:right-6 md:gap-2.5"
+        className="absolute bottom-6 right-4 z-20 flex flex-row gap-2 md:flex-col md:bottom-auto md:top-1/2 md:-translate-y-1/2 md:right-6 md:gap-1"
       >
-        {services.map((s, i) => (
-          <button
-            key={s.id}
-            aria-label={`Ir a ${s.title}`}
-            onClick={() => { const idx = currentRef.current; if (i !== idx && !lockRef.current) goTo(i, i > idx ? 1 : -1); }}
-            className={`rounded-full transition-all duration-500 ${i === current ? "w-4 h-1.5 md:w-1.5 md:h-4 bg-white" : "w-1.5 h-1.5 bg-white/30 hover:bg-white/60"}`}
-          />
-        ))}
+        {services.map((s, i) => {
+          const isActive = i === current;
+          return (
+            <button
+              key={s.id}
+              aria-label={`Ir a ${s.title}`}
+              aria-current={isActive ? "true" : undefined}
+              onClick={() => { const idx = currentRef.current; if (i !== idx && !lockRef.current) goTo(i, i > idx ? 1 : -1); }}
+              className="group relative flex items-center justify-center md:p-2"
+            >
+              {/* Etiqueta del servicio — aparece al pasar el ratón (escritorio) */}
+              <span className="pointer-events-none absolute right-full mr-1 hidden whitespace-nowrap rounded-full bg-deep-space/85 px-3 py-1 text-xs font-medium text-white opacity-0 -translate-x-1 backdrop-blur-sm transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 md:block">
+                {s.title}
+              </span>
+              {/* Punto */}
+              <span
+                className={`block rounded-full transition-all duration-300 ${
+                  isActive
+                    ? "w-4 h-1.5 md:w-2 md:h-5 bg-white"
+                    : "w-1.5 h-1.5 bg-white/40 group-hover:bg-white md:group-hover:scale-150"
+                }`}
+              />
+            </button>
+          );
+        })}
       </nav>
     </section>
   );

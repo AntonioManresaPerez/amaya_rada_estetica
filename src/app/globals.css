@@ -130,3 +130,187 @@
     border-radius: var(--radius-sm);
   }
 }
+
+/* Pétalos de cerezo — fondo decorativo de la sección "Sobre mí".
+   Dos capas anidadas para un movimiento realista:
+   .petal-fall  → caída vertical + balanceo lateral (elemento exterior)
+   .petal-spin  → volteo continuo en 3D (elemento interior, da el realismo)
+   Variables por pétalo: --sway (balanceo) · --petal-o (opacidad) · --tilt (inclinación). */
+.petal-field {
+  perspective: 800px;
+}
+
+.petal-fall {
+  position: absolute;
+  top: 0;
+  will-change: transform, opacity;
+  animation-name: petal-fall;
+  animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+}
+
+.petal-spin {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  will-change: transform;
+  animation-name: petal-spin;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.petal-spin svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 3px 4px rgba(74, 48, 109, 0.18));
+}
+
+@keyframes petal-fall {
+  0%   { transform: translate(0, -14vh); opacity: 0; }
+  8%   { opacity: var(--petal-o, 0.9); }
+  25%  { transform: translate(var(--sway, 40px), 22vh); }
+  50%  { transform: translate(calc(var(--sway, 40px) * -0.7), 50vh); }
+  75%  { transform: translate(var(--sway, 40px), 78vh); }
+  92%  { opacity: var(--petal-o, 0.9); }
+  100% { transform: translate(calc(var(--sway, 40px) * -0.3), 114vh); opacity: 0; }
+}
+
+@keyframes petal-spin {
+  0%   { transform: rotateX(0deg) rotateY(0deg) rotateZ(var(--tilt, -8deg)); }
+  100% { transform: rotateX(360deg) rotateY(540deg) rotateZ(var(--tilt, -8deg)); }
+}
+
+/* ===== Hero — aurora premium: blobs vivos, foco que sigue al cursor,
+   orbes de luz y título con brillo metálico ===== */
+.hero-aura {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(64px);
+  will-change: transform;
+}
+.hero-aura-1 {
+  width: 52vw; height: 52vw; left: -8%; top: -2%; opacity: 0.72;
+  background: radial-gradient(circle, var(--color-vintage-lavender), transparent 68%);
+  animation: hero-aura-1 17s ease-in-out infinite;
+}
+.hero-aura-2 {
+  width: 58vw; height: 58vw; right: -10%; top: 4%; opacity: 0.82;
+  background: radial-gradient(circle, var(--color-lavender-veil), transparent 70%);
+  animation: hero-aura-2 21s ease-in-out infinite;
+}
+.hero-aura-3 {
+  width: 46vw; height: 46vw; left: 28%; bottom: -16%; opacity: 0.66;
+  background: radial-gradient(circle, var(--color-thistle), transparent 68%);
+  animation: hero-aura-3 19s ease-in-out infinite;
+}
+@keyframes hero-aura-1 { 0%, 100% { transform: translate(-6%, -4%) scale(1); } 50% { transform: translate(10%, 8%) scale(1.25); } }
+@keyframes hero-aura-2 { 0%, 100% { transform: translate(6%, 4%) scale(1.1); } 50% { transform: translate(-8%, -6%) scale(0.92); } }
+@keyframes hero-aura-3 { 0%, 100% { transform: translate(0, 6%) scale(1.05); } 50% { transform: translate(8%, -8%) scale(1.2); } }
+
+.hero-spotlight {
+  position: absolute;
+  top: 0; left: 0;
+  width: 700px; height: 700px;
+  margin: -350px 0 0 -350px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.36), rgba(232, 215, 241, 0.2) 40%, transparent 72%);
+  transform: translate3d(var(--mx, 50vw), var(--my, 32vh), 0);
+  transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.hero-orb {
+  position: absolute;
+  bottom: -6%;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.95), rgba(232, 215, 241, 0.55) 46%, transparent 72%);
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.55));
+  will-change: transform, opacity;
+  animation: hero-orb-rise linear infinite;
+}
+@keyframes hero-orb-rise {
+  0%   { transform: translateY(0) scale(0.8); opacity: 0; }
+  12%  { opacity: var(--orb-o, 0.6); }
+  86%  { opacity: var(--orb-o, 0.6); }
+  100% { transform: translateY(-92vh) scale(1.15); opacity: 0; }
+}
+
+.hero-shimmer {
+  background: linear-gradient(100deg, var(--color-indigo-velvet) 0%, var(--color-vintage-lavender) 28%, #cda9da 50%, var(--color-vintage-lavender) 72%, var(--color-indigo-velvet) 100%);
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: hero-shimmer 5.5s linear infinite;
+}
+@keyframes hero-shimmer { to { background-position: 220% center; } }
+
+/* ===== Telón de transición — el mismo lenguaje luminoso: aurora viva
+   + un destello de luz que recorre el velo como seda ===== */
+.curtain-aura {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(72px);
+  will-change: transform;
+}
+.curtain-sheen {
+  position: absolute;
+  inset: -30% -45%;
+  background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.6) 50%, transparent 62%);
+  will-change: transform;
+  animation: curtain-sheen 1.8s ease-in-out infinite;
+}
+@keyframes curtain-sheen {
+  0%   { transform: translateX(-65%); }
+  100% { transform: translateX(65%); }
+}
+
+/* Chispas: polvo de luz que titila (estrellas de 4 puntas) */
+.curtain-sparkle {
+  position: absolute;
+  background: #ffffff;
+  clip-path: polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%);
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.9));
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: curtain-twinkle 2.4s ease-in-out infinite;
+}
+@keyframes curtain-twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.3) rotate(0deg); }
+  50%      { opacity: var(--tw-o, 0.9); transform: scale(1) rotate(45deg); }
+}
+
+/* ===== Fondo ambiental del resto de páginas — aurora muy suave y lenta,
+   en sintonía con la marca, sin restar legibilidad al contenido ===== */
+.page-aura {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  will-change: transform;
+}
+.page-aura-1 {
+  width: 46vw; height: 46vw; left: -10%; top: -8%; opacity: 0.28;
+  background: radial-gradient(circle, var(--color-vintage-lavender), transparent 70%);
+  animation: hero-aura-1 24s ease-in-out infinite;
+}
+.page-aura-2 {
+  width: 52vw; height: 52vw; right: -12%; top: 32%; opacity: 0.22;
+  background: radial-gradient(circle, var(--color-thistle), transparent 72%);
+  animation: hero-aura-2 28s ease-in-out infinite;
+}
+.page-aura-3 {
+  width: 40vw; height: 40vw; left: 34%; bottom: -12%; opacity: 0.2;
+  background: radial-gradient(circle, var(--color-lavender-veil), transparent 70%);
+  animation: hero-aura-3 26s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-aura, .hero-orb, .hero-shimmer,
+  .curtain-aura, .curtain-sheen, .curtain-sparkle,
+  .page-aura { animation: none; }
+  .hero-spotlight { transition: none; }
+}
+

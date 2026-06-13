@@ -4,22 +4,8 @@ import { sanityFetch } from "@/sanity/lib/fetch";
 import { allServicesQuery, serviceCategoriesQuery } from "@/sanity/lib/queries";
 import { urlFor } from "@/sanity/lib/image";
 import { buildMetadata } from "@/lib/seo";
+import { pexels, servicePhotoId } from "@/lib/service-photos";
 import type { SanityService, SanityServiceCategory } from "@/types/sanity";
-
-const CDN = "https://images.pexels.com/photos";
-const pexels = (id: number, w = 600, h = 450) =>
-  `${CDN}/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=${w}&h=${h}&fit=crop`;
-
-const SERVICE_PHOTOS: Record<string, number> = {
-  dermapen: 30809949,
-  "higiene-facial": 3985329,
-  laser: 4586726,
-  pedicura: 34930123,
-  maderoterapia: 6628691,
-  presoterapia: 5888064,
-  manchas: 5701545,
-  vacum: 8312823,
-};
 
 const STATIC_SERVICES = [
   { slug: "dermapen",       title: "Dermapen",               description: "Estimula la producción de colágeno y renueva la piel mediante microcanales de precisión para un efecto rejuvenecedor visible.",              duration: 60  },
@@ -32,6 +18,16 @@ const STATIC_SERVICES = [
   { slug: "vacum",          title: "Vacum",                   description: "Técnica de vacío que tonifica, modela y reactiva la circulación en zonas con celulitis y flacidez.",                                          duration: 45  },
 ];
 
+// Carrusel deslizable en móvil (scroll-snap nativo) · rejilla en md+
+const listCls =
+  "flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 -mx-6 px-6 " +
+  "md:mx-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6 md:overflow-visible md:px-0 " +
+  "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
+
+const cardCls =
+  "group flex flex-col rounded-2xl border border-thistle/40 bg-card overflow-hidden shadow-sm hover:shadow-md transition-shadow " +
+  "snap-start shrink-0 w-[80vw] max-w-xs md:w-auto md:max-w-none";
+
 export const metadata = buildMetadata({
   title: "Servicios de Estética en Murcia",
   description:
@@ -40,26 +36,23 @@ export const metadata = buildMetadata({
 });
 
 function ServiceCard({ service }: { service: SanityService }) {
-  const fallbackId = SERVICE_PHOTOS[service.slug];
   const imgSrc = service.image
     ? urlFor(service.image).width(600).height(450).url()
-    : fallbackId ? pexels(fallbackId) : null;
+    : pexels(servicePhotoId(service.slug));
 
   return (
     <Link
       href={`/servicios/${service.slug}`}
-      className="group flex flex-col rounded-2xl border border-thistle/40 bg-card overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+      className={cardCls}
     >
       <div className="relative aspect-4/3 bg-lavender-veil overflow-hidden">
-        {imgSrc && (
-          <Image
-            src={imgSrc}
-            alt={service.title}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          />
-        )}
+        <Image
+          src={imgSrc}
+          alt={service.title}
+          fill
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        />
       </div>
       <div className="flex flex-1 flex-col p-5 gap-2">
         <h3 className="font-serif text-lg text-deep-space group-hover:text-vintage-lavender transition-colors">
@@ -84,22 +77,19 @@ function ServiceCard({ service }: { service: SanityService }) {
 }
 
 function StaticServiceCard({ service }: { service: (typeof STATIC_SERVICES)[number] }) {
-  const photoId = SERVICE_PHOTOS[service.slug];
   return (
     <Link
       href="/reservar"
-      className="group flex flex-col rounded-2xl border border-thistle/40 bg-card overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+      className={cardCls}
     >
       <div className="relative aspect-4/3 bg-lavender-veil overflow-hidden">
-        {photoId && (
-          <Image
-            src={pexels(photoId)}
-            alt={service.title}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          />
-        )}
+        <Image
+          src={pexels(servicePhotoId(service.slug))}
+          alt={service.title}
+          fill
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        />
       </div>
       <div className="flex flex-1 flex-col p-5 gap-2">
         <h3 className="font-serif text-lg text-deep-space group-hover:text-vintage-lavender transition-colors">
@@ -149,19 +139,19 @@ export default async function ServiciosPage() {
                   <h2 className="mb-8 font-serif text-2xl text-indigo-velvet border-b border-thistle pb-3">
                     {cat.title}
                   </h2>
-                  <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className={listCls}>
                     {catServices.map((s) => <ServiceCard key={s._id} service={s} />)}
                   </div>
                 </section>
               );
             })
           ) : (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className={listCls}>
               {serviceList.map((s) => <ServiceCard key={s._id} service={s} />)}
             </div>
           )
         ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className={listCls}>
             {STATIC_SERVICES.map((s) => <StaticServiceCard key={s.slug} service={s} />)}
           </div>
         )}

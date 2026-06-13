@@ -6,7 +6,12 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { fadeUp, staggerContainer } from "@/components/motion/animations";
+import { FloatingPetals } from "@/components/decor/FloatingPetals";
 import { cn } from "@/lib/utils";
+
+// Fondo floral suave (cerezos sobre fondo claro) que acompaña a los pétalos.
+const FLORAL_BG =
+  "https://images.pexels.com/photos/4366839/pexels-photo-4366839.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1100&fit=crop";
 
 export function AboutSection() {
   const handlingRef = useRef(false);
@@ -55,18 +60,24 @@ export function AboutSection() {
   return (
     <section
       id="sobre-mi"
-      className="min-h-screen flex items-center px-6 py-20 bg-linear-to-b from-background to-lavender-veil/20"
+      className="relative overflow-hidden min-h-screen flex items-center px-6 py-16 md:py-20 bg-linear-to-b from-background to-lavender-veil/20"
     >
+      {/* Fondo floral suave (cerezos) */}
+      <div aria-hidden className="absolute inset-0">
+        <Image src={FLORAL_BG} alt="" fill className="object-cover" sizes="100vw" />
+        <div className="absolute inset-0 bg-linear-to-b from-background/92 via-background/80 to-lavender-veil/55" />
+      </div>
+      <FloatingPetals />
       <motion.div
         variants={staggerContainer}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-80px" }}
-        className="mx-auto w-full max-w-7xl grid gap-10 lg:gap-16 lg:grid-cols-2 items-center"
+        className="relative z-10 mx-auto w-full max-w-6xl grid gap-10 lg:gap-14 lg:grid-cols-2 items-center"
       >
         {/* Imagen */}
         <motion.div variants={fadeUp} className="relative order-last lg:order-first">
-          <div className="relative aspect-4/5 w-full">
+          <div className="relative aspect-4/5 w-full max-w-xs sm:max-w-sm mx-auto lg:mx-0">
             {/* Marco decorativo */}
             <div className="absolute -inset-4 rounded-[40%_60%_55%_45%/45%_55%_60%_40%] bg-thistle/25 -z-10" />
             <div className="relative h-full w-full rounded-[35%_65%_50%_50%/40%_50%_65%_45%] overflow-hidden bg-lavender-veil isolate">
@@ -86,7 +97,7 @@ export function AboutSection() {
         </motion.div>
 
         {/* Texto */}
-        <motion.div variants={staggerContainer} className="space-y-6">
+        <motion.div variants={staggerContainer} className="space-y-5 md:space-y-6">
           <motion.p
             variants={fadeUp}
             className="text-sm tracking-[0.3em] uppercase text-vintage-lavender"
@@ -96,7 +107,7 @@ export function AboutSection() {
 
           <motion.h2
             variants={fadeUp}
-            className="font-serif text-4xl text-deep-space leading-tight sm:text-5xl"
+            className="font-serif text-4xl text-deep-space leading-tight sm:text-[2.75rem]"
           >
             Cuidarte es mi
             <br />
@@ -105,7 +116,7 @@ export function AboutSection() {
 
           <motion.p
             variants={fadeUp}
-            className="text-muted-foreground leading-relaxed"
+            className="text-muted-foreground leading-relaxed md:text-lg"
           >
             Soy Amaya Rada, estética especializada en tratamientos faciales y corporales avanzados.
             Mi centro nació de la convicción de que cada persona merece sentirse bien en su propia piel,
@@ -114,7 +125,7 @@ export function AboutSection() {
 
           <motion.p
             variants={fadeUp}
-            className="text-muted-foreground leading-relaxed"
+            className="text-muted-foreground leading-relaxed md:text-lg"
           >
             Con más de diez años de experiencia y formación continua en las últimas tecnologías estéticas,
             ofrezco un espacio íntimo en Murcia donde el resultado importa tanto como el bienestar durante

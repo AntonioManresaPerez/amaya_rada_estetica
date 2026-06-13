@@ -294,7 +294,7 @@ export function ServicesFullscreenSection() {
         aria-label="Servicio anterior"
         onClick={() => goMobile(-1)}
         disabled={current === 0}
-        className="absolute left-3 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-deep-space/40 text-white backdrop-blur-sm transition-all duration-300 active:scale-90 active:bg-deep-space/70 disabled:pointer-events-none disabled:opacity-0 md:hidden"
+        className="absolute left-3 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-deep-space/20 text-white/70 backdrop-blur-[2px] transition-all duration-300 active:scale-90 active:bg-deep-space/45 active:text-white disabled:pointer-events-none disabled:opacity-0 md:hidden"
       >
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
           <path d="M15 18l-6-6 6-6" />
@@ -304,7 +304,7 @@ export function ServicesFullscreenSection() {
         aria-label="Servicio siguiente"
         onClick={() => goMobile(1)}
         disabled={current === N - 1}
-        className="absolute right-3 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-deep-space/40 text-white backdrop-blur-sm transition-all duration-300 active:scale-90 active:bg-deep-space/70 disabled:pointer-events-none disabled:opacity-0 md:hidden"
+        className="absolute right-3 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-deep-space/20 text-white/70 backdrop-blur-[2px] transition-all duration-300 active:scale-90 active:bg-deep-space/45 active:text-white disabled:pointer-events-none disabled:opacity-0 md:hidden"
       >
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
           <path d="M9 18l6-6-6-6" />

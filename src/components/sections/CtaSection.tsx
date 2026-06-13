@@ -56,13 +56,18 @@ export function CtaSection() {
   }, []);
 
   return (
-    <section id="reservar-cita" className="py-16 md:py-24 px-6 bg-linear-to-br from-indigo-velvet to-deep-space">
+    <section id="reservar-cita" className="relative overflow-hidden py-16 md:py-24 px-6 bg-linear-to-br from-indigo-velvet to-deep-space">
+      {/* Puente de color con la sección anterior (clara) — solo móvil */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-linear-to-b from-lavender-veil/35 via-lavender-veil/10 to-transparent md:hidden"
+      />
       <motion.div
         variants={staggerContainer}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
-        className="mx-auto max-w-3xl text-center"
+        className="relative z-10 mx-auto max-w-3xl text-center"
       >
         <motion.p
           variants={fadeUp}

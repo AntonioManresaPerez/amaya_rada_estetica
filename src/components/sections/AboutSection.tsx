@@ -69,6 +69,11 @@ export function AboutSection() {
         <div className="absolute inset-0 bg-linear-to-b from-background/92 via-background/80 to-lavender-veil/55" />
       </div>
       <FloatingPetals />
+      {/* Puente de color con la sección anterior (Servicios, oscura) — solo móvil */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 z-1 h-28 bg-linear-to-b from-deep-space via-deep-space/40 to-transparent md:hidden"
+      />
       <motion.div
         variants={staggerContainer}
         initial="hidden"

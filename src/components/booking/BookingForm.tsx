@@ -95,6 +95,7 @@ const ContactSchema = z.object({
   clientEmail: z.string().email("Email inválido"),
   clientPhone: z.string().optional(),
   notes: z.string().max(500).optional(),
+  website: z.string().max(0).optional(), // honeypot: debe quedar vacío
   gdprConsent: z
     .boolean()
     .refine((v) => v === true, "Debes aceptar la política de privacidad"),
@@ -213,6 +214,7 @@ export function BookingForm({ services }: { services: SanityService[] }) {
         appointmentDate: format(selectedDate, "yyyy-MM-dd"),
         appointmentTime: selectedTime,
         notes: contactData.notes,
+        website: contactData.website,
         gdprConsent: contactData.gdprConsent,
       });
 
@@ -550,6 +552,16 @@ export function BookingForm({ services }: { services: SanityService[] }) {
                 className="space-y-5"
                 noValidate
               >
+                {/* Honeypot anti-bot — invisible y no tabulable; un humano nunca lo rellena */}
+                <input
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  className="absolute -left-[9999px] h-0 w-0 opacity-0"
+                  {...register("website")}
+                />
+
                 {/* Nombre */}
                 <div className="space-y-1">
                   <label

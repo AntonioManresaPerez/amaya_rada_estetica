@@ -17,6 +17,7 @@ const ReservationSchema = z.object({
   appointmentDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha inválida"),
   appointmentTime: z.string().regex(/^\d{2}:\d{2}$/, "Hora inválida"),
   notes: z.string().max(500).optional(),
+  website: z.string().optional(), // honeypot anti-bot (debe llegar vacío)
   gdprConsent: z
     .boolean()
     .refine((v) => v === true, "Debes aceptar la política de privacidad"),
@@ -72,6 +73,12 @@ export async function createReservation(
     return { success: false, error: parsed.error.issues[0].message };
   }
   const val = parsed.data;
+
+  // Honeypot: si el campo trampa viene relleno es un bot → éxito ficticio sin
+  // tocar la base de datos ni enviar email (no le damos ninguna señal).
+  if (val.website && val.website.length > 0) {
+    return { success: true, id: "ok" };
+  }
 
   let supabase;
   try {

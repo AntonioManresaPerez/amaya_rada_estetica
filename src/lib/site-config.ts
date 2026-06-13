@@ -36,8 +36,8 @@ export const siteConfig = {
     { day: "Saturday",  open: "10:00", close: "14:00" },
   ],
   social: {
-    instagram: "https://www.instagram.com/amayarada.estetica",
-    tiktok: "https://www.tiktok.com/@amayarada.estetica",
+    instagram: "https://www.instagram.com/amaya_rada_estetica/",
+    tiktok: "https://www.tiktok.com/@amaya_rada_estetica",
   },
 } as const;
 

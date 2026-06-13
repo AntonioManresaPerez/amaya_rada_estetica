@@ -146,6 +146,13 @@ export function ServicesFullscreenSection() {
     else goTo(i, i > idx ? 1 : -1);
   };
 
+  // Móvil: flechas ← → para cambiar de servicio con deslizamiento suave
+  const goMobile = (dir: 1 | -1) => {
+    const target = currentRef.current + dir;
+    if (target < 0 || target > N - 1) return;
+    setIdx(target);
+  };
+
   // Escritorio: rueda + teclado + transiciones con secciones vecinas
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
@@ -281,6 +288,28 @@ export function ServicesFullscreenSection() {
           </div>
         ))}
       </div>
+
+      {/* Flechas ← → — solo móvil (se ocultan en el extremo correspondiente) */}
+      <button
+        aria-label="Servicio anterior"
+        onClick={() => goMobile(-1)}
+        disabled={current === 0}
+        className="absolute left-3 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-deep-space/40 text-white backdrop-blur-sm transition-all duration-300 active:scale-90 active:bg-deep-space/70 disabled:pointer-events-none disabled:opacity-0 md:hidden"
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+      </button>
+      <button
+        aria-label="Servicio siguiente"
+        onClick={() => goMobile(1)}
+        disabled={current === N - 1}
+        className="absolute right-3 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-deep-space/40 text-white backdrop-blur-sm transition-all duration-300 active:scale-90 active:bg-deep-space/70 disabled:pointer-events-none disabled:opacity-0 md:hidden"
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <path d="M9 18l6-6-6-6" />
+        </svg>
+      </button>
 
       {/* Telón — solo escritorio */}
       <motion.div style={{ y: curtainY }} className="fixed inset-0 z-49 hidden overflow-hidden md:block bg-linear-to-b from-lavender-veil via-[#f0e8f6] to-background pointer-events-none">

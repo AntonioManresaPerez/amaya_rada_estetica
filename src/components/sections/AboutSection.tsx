@@ -36,6 +36,7 @@ export function AboutSection() {
 
     const onTouchStart = (e: TouchEvent) => { touchY = e.touches[0].clientY; };
     const onTouchEnd = (e: TouchEvent) => {
+      if (window.innerWidth < 768) return; // móvil: scroll natural, sin telón
       if (!isInView() || handlingRef.current) return;
       const delta = touchY - e.changedTouches[0].clientY;
       if (delta < 40) return;

@@ -72,6 +72,12 @@ export function HeroSection({ heroVideo, tagline }: HeroSectionProps) {
 
       <HeroAura hasVideo={hasVideo} />
 
+      {/* Fundido hacia la primera imagen (Servicios) — solo móvil: empalma con su deep-space */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-linear-to-b from-transparent via-indigo-velvet/20 to-deep-space md:hidden"
+      />
+
       {/* Parallax suave del contenido (sentido opuesto al cursor → profundidad) */}
       <div
         className="relative"

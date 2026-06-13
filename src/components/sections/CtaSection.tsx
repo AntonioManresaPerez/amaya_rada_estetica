@@ -57,11 +57,17 @@ export function CtaSection() {
 
   return (
     <section id="reservar-cita" className="relative overflow-hidden py-16 md:py-24 px-6 bg-linear-to-br from-indigo-velvet to-deep-space">
-      {/* Puente de color con la sección anterior (clara) — solo móvil */}
+      {/* Fundido con la sección anterior (clara) — solo móvil: Sobre mí → Reservar cita */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-linear-to-b from-lavender-veil/35 via-lavender-veil/10 to-transparent md:hidden"
+        className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-linear-to-b from-lavender-veil/45 via-thistle/15 to-transparent md:hidden"
       />
+      {/* Fundido de color hacia el footer (escritorio y móvil): destello malva/índigo
+          que se asienta en deep-space para empalmar sin corte con el footer */}
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-56 overflow-hidden">
+        <div className="absolute left-1/2 bottom-3 h-48 w-[150%] -translate-x-1/2 rounded-[50%] bg-radial from-vintage-lavender/45 via-indigo-velvet/25 to-transparent blur-3xl" />
+        <div className="absolute inset-x-0 bottom-0 h-20 bg-linear-to-b from-transparent to-deep-space" />
+      </div>
       <motion.div
         variants={staggerContainer}
         initial="hidden"

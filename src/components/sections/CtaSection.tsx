@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { track } from "@vercel/analytics";
 import { buttonVariants } from "@/components/ui/button";
 import { Check } from "lucide-react";
 import { fadeUp, staggerContainer } from "@/components/motion/animations";
@@ -113,6 +114,7 @@ export function CtaSection() {
         <motion.div variants={fadeUp} className="flex flex-wrap justify-center gap-4">
           <Link
             href="/reservar"
+            onClick={() => track("reserva_click", { from: "cta_home" })}
             className={cn(
               buttonVariants({ size: "lg" }),
               "bg-white text-indigo-velvet hover:bg-lavender-veil"
@@ -124,6 +126,7 @@ export function CtaSection() {
             href={whatsappHref}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => track("whatsapp_click", { from: "cta_home" })}
             className={cn(
               buttonVariants({ variant: "outline", size: "lg" }),
               "border-white/60 bg-transparent text-white hover:bg-white/10 hover:text-white hover:border-white"

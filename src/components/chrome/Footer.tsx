@@ -127,9 +127,6 @@ export function Footer() {
           ))}
         </div>
       </div>
-
-      {/* Holgura en móvil para la barra CTA fija y el botón de WhatsApp */}
-      <div aria-hidden className="h-20 md:hidden" />
     </footer>
   );
 }

@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 import { WhatsAppButton } from "./WhatsAppButton";
-import { MobileBookingBar } from "./MobileBookingBar";
 import { PageBackdrop } from "@/components/decor/PageBackdrop";
 
 export function ConditionalChrome({ children }: { children: React.ReactNode }) {
@@ -22,7 +21,6 @@ export function ConditionalChrome({ children }: { children: React.ReactNode }) {
       {children}
       <Footer />
       <WhatsAppButton />
-      <MobileBookingBar />
     </>
   );
 }

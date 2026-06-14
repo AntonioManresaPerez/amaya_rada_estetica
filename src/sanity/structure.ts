@@ -13,6 +13,7 @@ export const structure: StructureResolver = (S) =>
       S.divider(),
       S.documentTypeListItem("service").title("Servicios"),
       S.documentTypeListItem("serviceCategory").title("Categorías de servicio"),
+      S.documentTypeListItem("promoPack").title("Bonos y tarjetas regalo"),
       S.divider(),
       S.documentTypeListItem("beforeAfter").title("Galería antes/después"),
       S.documentTypeListItem("testimonial").title("Testimonios"),

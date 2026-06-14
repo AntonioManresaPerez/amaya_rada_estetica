@@ -1,11 +1,23 @@
 import Image from "next/image";
 import Link from "next/link";
 import { sanityFetch } from "@/sanity/lib/fetch";
-import { allServicesQuery, serviceCategoriesQuery } from "@/sanity/lib/queries";
+import {
+  allServicesQuery,
+  serviceCategoriesQuery,
+  siteSettingsQuery,
+  promoPacksQuery,
+} from "@/sanity/lib/queries";
 import { urlFor } from "@/sanity/lib/image";
 import { buildMetadata } from "@/lib/seo";
 import { pexels, servicePhotoId } from "@/lib/service-photos";
-import type { SanityService, SanityServiceCategory } from "@/types/sanity";
+import { DEFAULT_PROMO_PACKS } from "@/lib/promo-packs";
+import { BonosSection } from "@/components/sections/BonosSection";
+import type {
+  SanityService,
+  SanityServiceCategory,
+  SanitySiteSettings,
+  SanityPromoPack,
+} from "@/types/sanity";
 
 const STATIC_SERVICES = [
   { slug: "dermapen",       title: "Dermapen",               description: "Estimula la producción de colágeno y renueva la piel mediante microcanales de precisión para un efecto rejuvenecedor visible.",              duration: 60  },
@@ -108,16 +120,19 @@ function StaticServiceCard({ service }: { service: (typeof STATIC_SERVICES)[numb
 }
 
 export default async function ServiciosPage() {
-  const [services, categories] = await Promise.all([
+  const [services, categories, settings, promoPacks] = await Promise.all([
     sanityFetch<SanityService[]>({ query: allServicesQuery, tags: ["service"] }),
     sanityFetch<SanityServiceCategory[]>({
       query: serviceCategoriesQuery,
       tags: ["serviceCategory"],
     }),
+    sanityFetch<SanitySiteSettings>({ query: siteSettingsQuery, tags: ["siteSettings"] }),
+    sanityFetch<SanityPromoPack[]>({ query: promoPacksQuery, tags: ["promoPack"] }),
   ]);
 
   const serviceList = services ?? [];
   const categoryList = categories ?? [];
+  const packs = promoPacks?.length ? promoPacks : DEFAULT_PROMO_PACKS;
 
   return (
     <main className="flex-1 pt-24">
@@ -156,6 +171,14 @@ export default async function ServiciosPage() {
           </div>
         )}
       </div>
+
+      {settings?.showBonos ? (
+        <BonosSection
+          packs={packs}
+          title={settings.bonosTitle}
+          subtitle={settings.bonosSubtitle}
+        />
+      ) : null}
     </main>
   );
 }

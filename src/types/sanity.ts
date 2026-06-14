@@ -95,4 +95,22 @@ export interface SanitySiteSettings {
   hours?: Array<{ day: string; open: string; close: string }>;
   heroImage?: string;
   heroVideo?: string;
+  showBonos?: boolean;
+  bonosTitle?: string;
+  bonosSubtitle?: string;
+}
+
+export type PromoPackKind = "bono" | "pack" | "tarjeta-regalo";
+
+export interface SanityPromoPack {
+  _id: string;
+  title: string;
+  kind?: PromoPackKind;
+  description?: string;
+  sessions?: number;
+  price?: number;
+  originalPrice?: number;
+  badge?: string;
+  featured?: boolean;
+  order?: number;
 }

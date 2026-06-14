@@ -9,6 +9,7 @@ export const siteSettings = defineType({
     { name: "contact", title: "Contacto" },
     { name: "hours", title: "Horarios" },
     { name: "media", title: "Hero" },
+    { name: "bonos", title: "Bonos" },
   ],
   fields: [
     defineField({
@@ -130,6 +131,27 @@ export const siteSettings = defineType({
       type: "file",
       group: "media",
       options: { accept: "video/mp4,video/webm" },
+    }),
+    defineField({
+      name: "showBonos",
+      title: "Mostrar sección de Bonos y tarjetas regalo",
+      description:
+        "Enciende este interruptor para que la sección de bonos sea visible en la web. Apagado = oculta para los visitantes.",
+      type: "boolean",
+      group: "bonos",
+      initialValue: false,
+    }),
+    defineField({
+      name: "bonosTitle",
+      title: "Título de la sección de bonos",
+      type: "string",
+      group: "bonos",
+    }),
+    defineField({
+      name: "bonosSubtitle",
+      title: "Subtítulo de la sección de bonos",
+      type: "string",
+      group: "bonos",
     }),
   ],
   preview: { prepare: () => ({ title: "Ajustes del sitio" }) },

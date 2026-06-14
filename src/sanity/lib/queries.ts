@@ -13,7 +13,25 @@ export const siteSettingsQuery = groq`
     social,
     hours,
     "heroImage": heroImage.asset->url,
-    "heroVideo": heroVideo.asset->url
+    "heroVideo": heroVideo.asset->url,
+    showBonos,
+    bonosTitle,
+    bonosSubtitle
+  }
+`;
+
+export const promoPacksQuery = groq`
+  *[_type == "promoPack" && active == true] | order(order asc){
+    _id,
+    title,
+    kind,
+    description,
+    sessions,
+    price,
+    originalPrice,
+    badge,
+    featured,
+    order
   }
 `;
 

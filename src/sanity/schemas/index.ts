@@ -6,6 +6,7 @@ import { post } from "./post";
 import { author } from "./author";
 import { beforeAfter } from "./beforeAfter";
 import { testimonial } from "./testimonial";
+import { promoPack } from "./promoPack";
 
 export const schemaTypes: SchemaTypeDefinition[] = [
   siteSettings,
@@ -15,4 +16,5 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   author,
   beforeAfter,
   testimonial,
+  promoPack,
 ];

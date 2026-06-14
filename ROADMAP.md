@@ -42,10 +42,17 @@ Barato, bajo riesgo, momento ideal antes de tener tráfico.
       **Falta** rellenar el precio de cada servicio en Sanity.
 - [x] CTA "Reservar" fija en móvil (barra inferior en páginas internas).
 - [x] "Primera consulta gratuita" destacada (distintivo en la sección de reserva).
-- [ ] Bonos / packs de sesiones (p. ej. "5 sesiones −15 %") y **tarjetas regalo**
-      (requiere definir packs y precios; valorar pasarela de pago).
+- [x] Bonos / packs de sesiones y **tarjetas regalo**: sección en `/servicios` con
+      packs de ejemplo (editables en Sanity → "Bonos y tarjetas regalo"). Visibilidad
+      controlada desde Sanity Studio con el interruptor **Ajustes → Bonos → "Mostrar
+      sección"** (apagado por defecto = oculto al público). Admin = login de Sanity.
+      **Follow-up opcional**: vista previa en vivo mientras está oculto (Next draft mode).
+- [x] Métricas: Vercel Analytics + Speed Insights (panel de Vercel) + tracking de clicks
+      `whatsapp_click`, `reserva_click`, `bono_whatsapp_click`.
 - [ ] Seña/depósito anti-no-show (Stripe) en tratamientos caros (requiere cuenta Stripe).
 - [ ] Confirmación por WhatsApp automatizada además de por email (requiere WhatsApp Business API).
+- [ ] (Opcional) Panel de administrador propio con login/roles (Supabase Auth) — solo si
+      se quiere todo bajo un único login (p. ej. zona de cliente). Hoy: admin = Sanity Studio.
 
 ---
 

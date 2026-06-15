@@ -8,6 +8,7 @@ import { ServicesFullscreenSection } from "@/components/sections/ServicesFullscr
 import { AboutSection } from "@/components/sections/AboutSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { CtaSection } from "@/components/sections/CtaSection";
+import { FaqSection } from "@/components/sections/FaqSection";
 import type { SanityTestimonial, SanitySiteSettings } from "@/types/sanity";
 
 export default async function HomePage() {
@@ -26,6 +27,7 @@ export default async function HomePage() {
       <AboutSection />
       <TestimonialsSection testimonials={testimonials ?? []} />
       <CtaSection />
+      <FaqSection />
     </main>
   );
 }

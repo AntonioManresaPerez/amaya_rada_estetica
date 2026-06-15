@@ -24,21 +24,27 @@ export function BeforeAfterGallery({ items }: Props) {
           key={item._id}
           className="rounded-2xl overflow-hidden border border-thistle/40 shadow-sm bg-card"
         >
-          <ReactCompareSlider
-            itemOne={
-              <ReactCompareSliderImage
-                src={urlFor(item.beforeImage).width(600).height(600).url()}
-                alt={`Antes — ${item.title}`}
-              />
-            }
-            itemTwo={
-              <ReactCompareSliderImage
-                src={urlFor(item.afterImage).width(600).height(600).url()}
-                alt={`Después — ${item.title}`}
-              />
-            }
-            style={{ aspectRatio: "1 / 1" }}
-          />
+          <div className="relative">
+            <ReactCompareSlider
+              itemOne={
+                <ReactCompareSliderImage
+                  src={urlFor(item.beforeImage).width(600).height(600).url()}
+                  alt={`Antes — ${item.title}`}
+                />
+              }
+              itemTwo={
+                <ReactCompareSliderImage
+                  src={urlFor(item.afterImage).width(600).height(600).url()}
+                  alt={`Después — ${item.title}`}
+                />
+              }
+              style={{ aspectRatio: "1 / 1" }}
+            />
+            {/* Marca de agua discreta */}
+            <span className="pointer-events-none absolute bottom-2 right-2 select-none text-[10px] font-semibold uppercase tracking-wider text-white/85 drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
+              Amaya Rada Estética
+            </span>
+          </div>
           <div className="p-4">
             <h3 className="font-medium text-indigo-velvet text-sm">{item.title}</h3>
             {item.service && (

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition, useCallback } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { DayPicker } from "react-day-picker";
 import { es } from "date-fns/locale";
@@ -419,12 +420,13 @@ export function BookingForm({
                             <div className={cn("absolute top-0 left-0 right-0 h-[3px]", categoryAccentBar(s.category?.slug))} />
                             {/* Imagen real de Sanity (si existe) */}
                             {imgUrl && (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img
+                              <Image
                                 src={imgUrl}
                                 alt=""
                                 aria-hidden
-                                className="absolute inset-0 w-full h-full object-cover opacity-20"
+                                fill
+                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                className="object-cover opacity-20"
                               />
                             )}
                             {/* Overlay seleccionado */}

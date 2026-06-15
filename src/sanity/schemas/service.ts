@@ -49,6 +49,29 @@ export const service = defineType({
       group: "content",
     }),
     defineField({
+      name: "benefits",
+      title: "Beneficios",
+      type: "array",
+      of: [{ type: "string" }],
+      group: "content",
+    }),
+    defineField({
+      name: "process",
+      title: "Cómo es la sesión (pasos)",
+      type: "array",
+      group: "content",
+      of: [
+        {
+          type: "object",
+          fields: [
+            { name: "title", title: "Título del paso", type: "string" },
+            { name: "description", title: "Descripción", type: "text", rows: 2 },
+          ],
+          preview: { select: { title: "title", subtitle: "description" } },
+        },
+      ],
+    }),
+    defineField({
       name: "contraindications",
       title: "Contraindicaciones",
       type: "array",

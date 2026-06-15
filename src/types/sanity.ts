@@ -27,11 +27,13 @@ export interface SanityService {
   slug: string;
   shortDescription: string;
   longDescription?: unknown;
+  benefits?: string[];
+  process?: { title?: string; description?: string }[];
   duration?: number;
   price?: number;
   image?: SanityImage;
   gallery?: SanityImage[];
-  contraindications?: string;
+  contraindications?: string[];
   faq?: SanityFaq[];
   category?: { title: string; slug: string };
   featured?: boolean;

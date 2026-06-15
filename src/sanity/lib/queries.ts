@@ -67,6 +67,8 @@ export const serviceBySlugQuery = groq`
     "slug": slug.current,
     shortDescription,
     longDescription,
+    benefits,
+    process,
     duration,
     price,
     image,

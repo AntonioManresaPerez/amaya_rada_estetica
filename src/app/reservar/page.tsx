@@ -12,7 +12,10 @@ export const metadata: Metadata = buildMetadata({
   path: "/reservar",
 });
 
-export default async function ReservarPage() {
+type Props = { searchParams: Promise<{ servicio?: string }> };
+
+export default async function ReservarPage({ searchParams }: Props) {
+  const { servicio } = await searchParams;
   const services =
     (await sanityFetch<SanityService[]>({
       query: allServicesQuery,
@@ -30,7 +33,7 @@ export default async function ReservarPage() {
         </p>
       </div>
 
-      <BookingForm services={services} />
+      <BookingForm services={services} initialServiceSlug={servicio} />
     </main>
   );
 }

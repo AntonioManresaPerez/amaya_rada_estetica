@@ -131,8 +131,18 @@ function categoryAccentBar(slug?: string) {
   }
 }
 
-export function BookingForm({ services }: { services: SanityService[] }) {
+export function BookingForm({
+  services,
+  initialServiceSlug,
+}: {
+  services: SanityService[];
+  initialServiceSlug?: string;
+}) {
   const router = useRouter();
+
+  const initialService = initialServiceSlug
+    ? services.find((s) => s.slug === initialServiceSlug)
+    : undefined;
   const [step, setStep] = useState<Step>(1);
   const [isPending, startTransition] = useTransition();
   const [activeCategory, setActiveCategory] = useState<string>("all");
@@ -151,7 +161,17 @@ export function BookingForm({ services }: { services: SanityService[] }) {
     return matchesCategory && matchesSearch;
   });
 
-  const [selected, setSelected] = useState<SelectedService | null>(null);
+  const [selected, setSelected] = useState<SelectedService | null>(
+    initialService
+      ? {
+          _id: initialService._id,
+          title: initialService.title,
+          slug: initialService.slug,
+          durationMin: initialService.duration ?? 60,
+          price: initialService.price,
+        }
+      : null
+  );
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState<string>("");
   const [occupiedSlots, setOccupiedSlots] = useState<string[]>([]);

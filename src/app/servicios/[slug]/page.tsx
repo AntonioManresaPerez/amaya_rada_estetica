@@ -128,7 +128,10 @@ export default async function ServicePage({ params }: Props) {
               </div>
             )}
           </div>
-          <Link href="/reservar" className={buttonVariants({ size: "lg" })}>
+          <Link
+            href={`/reservar?servicio=${service.slug}`}
+            className={buttonVariants({ size: "lg" })}
+          >
             Reservar este tratamiento
           </Link>
         </div>

@@ -131,6 +131,33 @@ function categoryAccentBar(slug?: string) {
   }
 }
 
+// Normaliza para comparar: minúsculas, sin acentos, guiones→espacios.
+function normalizeKey(s: string) {
+  return s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/-/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// Busca el servicio que coincide con el parámetro recibido (slug o título),
+// tolerando variaciones (p. ej. "dermapen" → "Dermapen facial").
+function matchService(services: SanityService[], key?: string): SanityService | undefined {
+  if (!key) return undefined;
+  const bySlug = services.find((s) => s.slug === key);
+  if (bySlug) return bySlug;
+  const k = normalizeKey(key);
+  if (!k) return undefined;
+  const exact = services.find((s) => normalizeKey(s.title) === k || normalizeKey(s.slug) === k);
+  if (exact) return exact;
+  return services.find((s) => {
+    const t = normalizeKey(s.title);
+    return t.includes(k) || k.includes(t);
+  });
+}
+
 export function BookingForm({
   services,
   initialServiceSlug,
@@ -140,9 +167,7 @@ export function BookingForm({
 }) {
   const router = useRouter();
 
-  const initialService = initialServiceSlug
-    ? services.find((s) => s.slug === initialServiceSlug)
-    : undefined;
+  const initialService = matchService(services, initialServiceSlug);
   const [step, setStep] = useState<Step>(1);
   const [isPending, startTransition] = useTransition();
   const [activeCategory, setActiveCategory] = useState<string>("all");

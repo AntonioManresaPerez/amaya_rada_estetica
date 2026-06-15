@@ -53,7 +53,7 @@ function ServiceSlide({ service, active, eager }: { service: (typeof services)[n
           <p className="mb-2.5 text-xs tracking-[0.3em] uppercase text-lavender-veil/65 sm:mb-3 sm:text-sm sm:tracking-[0.35em]">{service.number} &mdash; {service.subtitle}</p>
           <h2 className="mb-4 font-serif text-[2.75rem] leading-[1.03] text-white sm:text-6xl sm:leading-[0.95] md:mb-5 md:text-8xl">{service.title}</h2>
           <p className={`mb-6 max-w-md text-[0.95rem] leading-relaxed text-lavender-veil/85 sm:text-base md:mb-8 md:text-lg ${isRight ? "md:ml-auto" : isCenter ? "mx-auto" : ""}`}>{service.description}</p>
-          <Link href="/reservar" className="inline-flex items-center rounded-xl border border-white/25 bg-white/10 px-7 py-3.5 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/20">
+          <Link href={`/reservar?servicio=${service.id}`} className="inline-flex items-center rounded-xl border border-white/25 bg-white/10 px-7 py-3.5 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/20">
             Reservar tratamiento
           </Link>
         </motion.div>

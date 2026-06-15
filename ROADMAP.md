@@ -76,10 +76,12 @@ Barato, bajo riesgo, momento ideal antes de tener tráfico.
 
 ## Frente D — SEO y contenido (P2)
 
-- [ ] `BreadcrumbList` JSON-LD en `/servicios/[slug]` y `/blog/[slug]` (las migas se pintan sin schema).
+- [x] `BreadcrumbList` JSON-LD en `/servicios/[slug]` y `/blog/[slug]`.
+- [x] FAQ en la home (sección oscura tras el CTA) con `FAQPage` JSON-LD. Preguntas editables en
+      `src/lib/faqs.ts`.
+- [x] Google Business Profile en `sameAs`: plumbing listo → pega tu URL en `siteConfig.social.google`.
 - [ ] Sembrar contenido en Sanity: blog, testimonios y galería (hoy vacíos → "próximamente").
-- [ ] FAQ en la home.
-- [ ] Google Business Profile en `sameAs` del schema.
+      **Requiere contenido real del usuario** (testimonios/galería deben ser reales, no inventados).
 
 ---
 

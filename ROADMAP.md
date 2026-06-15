@@ -59,13 +59,18 @@ Barato, bajo riesgo, momento ideal antes de tener tráfico.
 ## Frente C — Riqueza visual y autenticidad (P1/P2)
 
 - [ ] **Sustituir el stock de Pexels por fotografía real** de Amaya y del centro
-      (mayor impacto visual; requiere material). Mantener stock solo como fallback.
-- [ ] Páginas de servicio más ricas: proceso paso a paso, beneficios, resultados/tiempos
-      esperados, contraindicaciones (el schema de Sanity ya lo soporta), tratamientos relacionados.
-- [ ] Galería antes/después con **marca de agua** (el flujo de consentimiento ya existe).
+      (mayor impacto visual; **requiere material del usuario**). El sistema ya usa imagen de
+      Sanity con fallback a stock: basta subir fotos a cada servicio en Studio y reemplazar
+      `public/amaya-rada.webp`.
+- [x] Páginas de servicio más ricas: descripción detallada, **beneficios**, **cómo es la sesión
+      (pasos)**, galería, contraindicaciones y **tratamientos relacionados** (auto por categoría).
+      Beneficios y pasos son campos nuevos en Sanity → rellenar por servicio.
+- [x] Galería antes/después con **marca de agua** discreta (overlay). *Follow-up opcional*: marca
+      de agua incrustada en el fichero (Cloudinary) para que no se pueda recortar.
 - [ ] **Decidir dark mode**: activar (toggle + `localStorage` + `prefers-color-scheme`) o retirar
-      el CSS `.dark` que hoy no se usa.
-- [ ] Feed de Instagram (se enlaza en el footer pero no se muestra).
+      el CSS `.dark` que hoy no se usa. (Pendiente decisión del usuario.)
+- [ ] Feed de Instagram (requiere token de la API de Instagram o un widget de terceros; alternativa:
+      sección "Síguenos" con imágenes curadas que enlazan al perfil).
 
 ---
 

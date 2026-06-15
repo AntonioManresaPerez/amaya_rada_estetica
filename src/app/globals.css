@@ -68,28 +68,6 @@
   --ring: #a167a5;
 }
 
-.dark {
-  --background: #0e273c;           /* deep-space como fondo oscuro */
-  --foreground: #e8d7f1;           /* lavender-veil para texto */
-  --card: #1a3650;
-  --card-foreground: #e8d7f1;
-  --popover: #1a3650;
-  --popover-foreground: #e8d7f1;
-  --primary: #a167a5;              /* vintage-lavender como primario en dark */
-  --primary-foreground: #ffffff;
-  --secondary: #4a306d;
-  --secondary-foreground: #e8d7f1;
-  --muted: #1a3650;
-  --muted-foreground: #d3bccc;
-  --accent: #a167a5;
-  --accent-foreground: #ffffff;
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --border: #4a306d;
-  --input: #4a306d;
-  --ring: #a167a5;
-}
-
 /* react-day-picker — adaptar colores a paleta Amaya Rada */
 .rdp-root {
   --rdp-accent-color: #a167a5;           /* vintage-lavender */

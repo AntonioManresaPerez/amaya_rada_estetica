@@ -67,8 +67,8 @@ Barato, bajo riesgo, momento ideal antes de tener tráfico.
       Beneficios y pasos son campos nuevos en Sanity → rellenar por servicio.
 - [x] Galería antes/después con **marca de agua** discreta (overlay). *Follow-up opcional*: marca
       de agua incrustada en el fichero (Cloudinary) para que no se pueda recortar.
-- [ ] **Decidir dark mode**: activar (toggle + `localStorage` + `prefers-color-scheme`) o retirar
-      el CSS `.dark` que hoy no se usa. (Pendiente decisión del usuario.)
+- [x] **Dark mode**: decidido **retirarlo**. Eliminado el bloque `.dark` de `globals.css`; la web
+      queda en tema claro lavanda. (`@custom-variant dark` se mantiene → utilidades `dark:` inertes.)
 - [ ] Feed de Instagram (requiere token de la API de Instagram o un widget de terceros; alternativa:
       sección "Síguenos" con imágenes curadas que enlazan al perfil).
 

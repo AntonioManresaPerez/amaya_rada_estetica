@@ -71,7 +71,11 @@ export function localBusinessJsonLd() {
       opens: h.open,
       closes: h.close,
     })),
-    sameAs: [siteConfig.social.instagram, siteConfig.social.tiktok],
+    sameAs: [
+      siteConfig.social.instagram,
+      siteConfig.social.tiktok,
+      siteConfig.social.google,
+    ].filter(Boolean),
     priceRange: "€€",
     // Solo se incluye si hay reseñas reales configuradas (evita rich snippets falsos).
     ...(siteConfig.reviews.count > 0
@@ -83,5 +87,19 @@ export function localBusinessJsonLd() {
           },
         }
       : {}),
+  };
+}
+
+// Migas de pan en formato schema.org (rich result de breadcrumb en Google).
+export function breadcrumbsJsonLd(items: { name: string; path: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((it, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: it.name,
+      item: `${siteConfig.url}${it.path}`,
+    })),
   };
 }

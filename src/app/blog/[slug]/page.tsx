@@ -7,7 +7,7 @@ import { PortableText } from "@portabletext/react";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { postBySlugQuery, allPostsQuery } from "@/sanity/lib/queries";
 import { urlFor } from "@/sanity/lib/image";
-import { buildMetadata } from "@/lib/seo";
+import { buildMetadata, breadcrumbsJsonLd } from "@/lib/seo";
 import { siteConfig } from "@/lib/site-config";
 import type { SanityPost } from "@/types/sanity";
 
@@ -66,11 +66,21 @@ export default async function BlogPostPage({ params }: Props) {
     }),
   };
 
+  const breadcrumbLd = breadcrumbsJsonLd([
+    { name: "Inicio", path: "/" },
+    { name: "Blog", path: "/blog" },
+    { name: post.title, path: `/blog/${post.slug}` },
+  ]);
+
   return (
     <main className="flex-1 pt-24">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
 
       <nav

@@ -38,6 +38,8 @@ export const siteConfig = {
   social: {
     instagram: "https://www.instagram.com/amaya_rada_estetica/",
     tiktok: "https://www.tiktok.com/@amaya_rada_estetica",
+    // Pega aquí el enlace a tu ficha de Google Business para reforzar el SEO local.
+    google: "",
   },
   // Valoración de Google. Rellena con tus datos REALES para activar las
   // estrellas en la web y en los resultados de búsqueda (aggregateRating).

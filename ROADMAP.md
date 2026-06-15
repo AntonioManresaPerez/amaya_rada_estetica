@@ -87,6 +87,7 @@ Barato, bajo riesgo, momento ideal antes de tener tráfico.
 
 ## Frente E — Pulido técnico (P2)
 
-- [ ] Tarjetas de servicio del `BookingForm` con `next/image` en vez de `<img>`.
-- [ ] Animaciones de entrada de Framer Motion que respeten `prefers-reduced-motion` a nivel de
-      componente (la decoración CSS ya está cubierta).
+- [x] Tarjetas de servicio del `BookingForm` con `next/image` (`fill` + `sizes`) en vez de `<img>`.
+- [x] Animaciones de Framer Motion que respetan `prefers-reduced-motion`: `MotionConfig
+      reducedMotion="user"` en `ConditionalChrome` → mantiene fundidos (opacity) y desactiva
+      desplazamientos/escala para toda la web de marketing (la decoración CSS ya estaba cubierta).

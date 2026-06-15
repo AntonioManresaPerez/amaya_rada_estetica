@@ -9,6 +9,7 @@ import { AboutSection } from "@/components/sections/AboutSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { CtaSection } from "@/components/sections/CtaSection";
 import { FaqSection } from "@/components/sections/FaqSection";
+import { InstagramSection } from "@/components/sections/InstagramSection";
 import type { SanityTestimonial, SanitySiteSettings } from "@/types/sanity";
 
 export default async function HomePage() {
@@ -28,6 +29,7 @@ export default async function HomePage() {
       <TestimonialsSection testimonials={testimonials ?? []} />
       <CtaSection />
       <FaqSection />
+      <InstagramSection />
     </main>
   );
 }

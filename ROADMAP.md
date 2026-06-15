@@ -69,8 +69,10 @@ Barato, bajo riesgo, momento ideal antes de tener tráfico.
       de agua incrustada en el fichero (Cloudinary) para que no se pueda recortar.
 - [x] **Dark mode**: decidido **retirarlo**. Eliminado el bloque `.dark` de `globals.css`; la web
       queda en tema claro lavanda. (`@custom-variant dark` se mantiene → utilidades `dark:` inertes.)
-- [ ] Feed de Instagram (requiere token de la API de Instagram o un widget de terceros; alternativa:
-      sección "Síguenos" con imágenes curadas que enlazan al perfil).
+- [x] Sección "Síguenos en Instagram" en la home (tema oscuro tras la FAQ): mosaico de fotos que
+      enlazan al perfil + botón de seguir, con tracking `instagram_click`. Imágenes **placeholder**
+      editables en `src/lib/instagram.ts` → sustituir por fotos reales. *Follow-up opcional*: feed en
+      vivo con la API de Instagram o un widget de terceros (requiere token).
 
 ---
 

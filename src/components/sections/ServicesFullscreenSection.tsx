@@ -80,7 +80,7 @@ export function ServicesFullscreenSection() {
 
   const runAnim = useCallback(
     (to: number) =>
-      new Promise<void>(res => animate(curtainP, to, { duration: 0.9, ease: [0.76, 0, 0.24, 1], onComplete: res })),
+      new Promise<void>(res => animate(curtainP, to, { duration: 0.5, ease: [0.76, 0, 0.24, 1], onComplete: res })),
     [curtainP],
   );
 
@@ -107,7 +107,7 @@ export function ServicesFullscreenSection() {
     curtainP.set(dir > 0 ? -1 : 1);
     runAnim(0)
       .then(() => { setIdx(idx); })
-      .then(() => new Promise<void>(r => setTimeout(r, 100)))
+      .then(() => new Promise<void>(r => setTimeout(r, 60)))
       .then(() => runAnim(dir > 0 ? 1 : -1))
       .then(() => { lockRef.current = false; window.dispatchEvent(new Event("curtain:settle-in")); });
   }, [curtainP, runAnim]);

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useTransform, type MotionValue } from "framer-motion";
+import { motion, useVelocity, useSpring, useTransform, type MotionValue } from "framer-motion";
 
 // Partículas lavanda que reaccionan a la velocidad del scroll: derivan y giran
 // cuando avanzas rápido y se asientan al detenerte. Solo decorativo.
@@ -13,19 +13,21 @@ const PETALS = [
   { left: "60%", top: "82%", size: 8, op: 0.2, factor: -1.1 },
 ];
 
-export function Atmosphere({ velocity }: { velocity: MotionValue<number> }) {
+export function Atmosphere({ progress }: { progress: MotionValue<number> }) {
+  const velocity = useVelocity(progress);
+  const smooth = useSpring(velocity, { stiffness: 60, damping: 18, mass: 0.4 });
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 z-20 overflow-hidden">
       {PETALS.map((p, i) => (
-        <Petal key={i} p={p} velocity={velocity} />
+        <Petal key={i} p={p} smooth={smooth} />
       ))}
     </div>
   );
 }
 
-function Petal({ p, velocity }: { p: (typeof PETALS)[number]; velocity: MotionValue<number> }) {
-  const y = useTransform(velocity, (v) => v * 40 * p.factor);
-  const rotate = useTransform(velocity, (v) => v * 25 * p.factor);
+function Petal({ p, smooth }: { p: (typeof PETALS)[number]; smooth: MotionValue<number> }) {
+  const y = useTransform(smooth, (v) => v * 40 * p.factor);
+  const rotate = useTransform(smooth, (v) => v * 25 * p.factor);
   return (
     <motion.span
       className="absolute rounded-full bg-lavender-veil blur-[1px]"

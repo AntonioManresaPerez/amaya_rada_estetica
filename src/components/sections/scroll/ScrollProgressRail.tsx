@@ -5,16 +5,13 @@ import { motion, useMotionValueEvent, useTransform, type MotionValue } from "fra
 import type { ScrollService } from "./ServiceLayer";
 
 // Índice/“capítulos” del recorrido: línea que se rellena con el scroll y marca
-// el servicio activo. Cada capítulo es clicable (salta a su escena). En móvil se
-// reduce a una barra fina superior.
+// el servicio activo. En móvil se reduce a una barra fina superior.
 export function ScrollProgressRail({
   services,
   progress,
-  onSelect,
 }: {
   services: ScrollService[];
   progress: MotionValue<number>;
-  onSelect: (index: number) => void;
 }) {
   const N = services.length;
   const [active, setActive] = useState(0);
@@ -31,8 +28,8 @@ export function ScrollProgressRail({
         style={{ scaleX: fill }}
       />
 
-      {/* Índice lateral clicable (escritorio) */}
-      <nav aria-label="Servicios" className="absolute right-5 top-1/2 z-30 hidden -translate-y-1/2 md:block">
+      {/* Índice lateral (escritorio) */}
+      <nav aria-hidden className="absolute right-5 top-1/2 z-30 hidden -translate-y-1/2 md:block">
         <div className="relative flex flex-col items-end gap-6 pr-3">
           <span className="absolute right-[5px] top-1.5 bottom-1.5 w-px bg-white/15" />
           <motion.span
@@ -40,29 +37,20 @@ export function ScrollProgressRail({
             style={{ scaleY: fill }}
           />
           {services.map((s, i) => (
-            <button
-              key={s.id}
-              type="button"
-              onClick={() => onSelect(i)}
-              aria-label={`Ir a ${s.title}`}
-              aria-current={i === active ? "true" : undefined}
-              className="group flex items-center gap-3 focus-visible:outline-none"
-            >
+            <div key={s.id} className="flex items-center gap-3">
               <span
                 className={`font-serif text-xs transition-colors duration-300 ${
-                  i === active ? "text-white" : "text-white/35 group-hover:text-white/70"
+                  i === active ? "text-white" : "text-white/35"
                 }`}
               >
                 {s.number}
               </span>
               <span
                 className={`-mr-[3px] h-2 w-2 rounded-full transition-all duration-300 ${
-                  i === active
-                    ? "scale-125 bg-vintage-lavender"
-                    : "bg-white/30 group-hover:bg-white/60"
+                  i === active ? "scale-125 bg-vintage-lavender" : "bg-white/30"
                 }`}
               />
-            </button>
+            </div>
           ))}
         </div>
       </nav>

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { ScrollStage } from "@/components/sections/scroll/ScrollStage";
-import { ScrollIntro } from "@/components/sections/scroll/ScrollIntro";
-import { ScrollOutro } from "@/components/sections/scroll/ScrollOutro";
 import type { ScrollService } from "@/components/sections/scroll/ServiceLayer";
 
 // Prototipo: fuera del índice de Google mientras se evalúa el efecto.
@@ -51,9 +50,37 @@ const SERVICES: ScrollService[] = [
 export default function ServiciosScrollPage() {
   return (
     <main className="flex-1 bg-deep-space text-white">
-      <ScrollIntro photoId={SERVICES[0].photoId} />
+      {/* Intro */}
+      <section className="flex h-[85vh] flex-col items-center justify-center px-6 text-center">
+        <p className="mb-3 text-sm uppercase tracking-[0.35em] text-vintage-lavender">
+          Prototipo
+        </p>
+        <h1 className="font-serif text-4xl md:text-6xl">Nuestros servicios</h1>
+        <p className="mt-4 max-w-md text-lavender-veil/70">
+          Desliza para recorrer cada tratamiento.
+        </p>
+        <span aria-hidden className="mt-10 animate-bounce text-2xl text-lavender-veil/60">
+          ↓
+        </span>
+      </section>
+
       <ScrollStage services={SERVICES} />
-      <ScrollOutro />
+
+      {/* Cierre con CTA */}
+      <section className="flex h-[85vh] flex-col items-center justify-center px-6 text-center">
+        <h2 className="font-serif text-3xl text-white md:text-5xl">
+          ¿Reservamos tu cita?
+        </h2>
+        <p className="mt-4 max-w-md text-lavender-veil/70">
+          Tu primera consulta de valoración es gratuita.
+        </p>
+        <Link
+          href="/reservar"
+          className="mt-8 inline-flex min-h-11 items-center rounded-xl bg-white px-7 py-3.5 text-sm font-medium text-indigo-velvet transition-colors hover:bg-lavender-veil focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+        >
+          Reservar cita
+        </Link>
+      </section>
     </main>
   );
 }

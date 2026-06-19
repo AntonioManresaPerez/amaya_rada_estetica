@@ -40,19 +40,22 @@ function MaskLine({
   );
 }
 
-export function ServiceLayer({
-  service,
-  index,
-  count,
-  progress,
-  reduce,
-}: {
+interface LayerProps {
   service: ScrollService;
   index: number;
   count: number;
   progress: MotionValue<number>;
+  mouseX: MotionValue<number>;
+  mouseY: MotionValue<number>;
+  velSkew: MotionValue<number>;
+  velBlur: MotionValue<string>;
   reduce: boolean;
-}) {
+  depth: boolean; // parallax de ratón + skew/blur (solo escritorio)
+}
+
+export function ServiceLayer({
+  service, index, count, progress, mouseX, mouseY, velSkew, velBlur, reduce, depth,
+}: LayerProps) {
   const N = count;
   const tw = 0.4 / N; // ancho de la zona de crossfade
   const s = index / N;
@@ -83,48 +86,74 @@ export function ServiceLayer({
   const btnOpacity = useTransform(lp, [0.26, 0.44, 0.66, 0.84], [0, 1, 1, 0]);
   const btnY = useTransform(lp, [0.26, 0.44], [24, 0]);
 
+  // Parallax de ratón: cada capa a una profundidad distinta.
+  const imgPX = useTransform(mouseX, (v) => v * 14);
+  const imgPY = useTransform(mouseY, (v) => v * 14);
+  const haloPX = useTransform(mouseX, (v) => v * 32);
+  const haloPY = useTransform(mouseY, (v) => v * 32);
+  const numPX = useTransform(mouseX, (v) => v * 24);
+  const numPY = useTransform(mouseY, (v) => v * 24);
+  const txtPX = useTransform(mouseX, (v) => v * 8);
+  const txtPY = useTransform(mouseY, (v) => v * 8);
+
+  const imgScroll = reduce
+    ? {}
+    : depth
+      ? { scale, y: imgY, skewY: velSkew, filter: velBlur }
+      : { scale, y: imgY };
+
   return (
     <motion.div className="absolute inset-0" style={{ opacity, pointerEvents }}>
-      {/* Imagen con parallax + zoom */}
-      <motion.div className="absolute inset-0" style={reduce ? {} : { y: imgY, scale }}>
-        <Image src={pexels(service.photoId)} alt={service.alt} fill priority={index === 0} sizes="100vw" className="object-cover" />
-      </motion.div>
+      {/* Imagen: capa parallax-ratón → capa scroll (zoom/skew/blur) */}
+      <div className="absolute inset-0 overflow-hidden">
+        <motion.div className="absolute -inset-[5%]" style={depth ? { x: imgPX, y: imgPY } : {}}>
+          <motion.div className="absolute inset-0" style={imgScroll}>
+            <Image src={pexels(service.photoId)} alt={service.alt} fill priority={index === 0} sizes="100vw" className="object-cover" />
+          </motion.div>
+        </motion.div>
+      </div>
       <div className="absolute inset-0 bg-deep-space/55" />
       <div className="absolute inset-0 bg-linear-to-b from-deep-space via-transparent to-deep-space" />
 
       {/* Halo con tinte por servicio */}
-      <motion.div
-        aria-hidden
-        className={`pointer-events-none absolute left-1/2 top-1/2 h-[62vmin] w-[62vmin] -translate-x-1/2 -translate-y-1/2 rounded-full bg-radial ${service.halo} blur-3xl`}
-        style={reduce ? { opacity: 0.35 } : { scale: haloScale, opacity: haloOpacity }}
-      />
+      <motion.div className="pointer-events-none absolute inset-0 flex items-center justify-center" style={depth ? { x: haloPX, y: haloPY } : {}}>
+        <motion.div
+          aria-hidden
+          className={`h-[62vmin] w-[62vmin] rounded-full bg-radial ${service.halo} blur-3xl`}
+          style={reduce ? { opacity: 0.35 } : { scale: haloScale, opacity: haloOpacity }}
+        />
+      </motion.div>
 
       {/* Número gigante de fondo */}
-      <span aria-hidden className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 select-none font-serif text-[7rem] leading-none text-white/[0.07] md:right-12 md:text-[19rem]">
-        {service.number}
-      </span>
+      <motion.div aria-hidden className="pointer-events-none absolute inset-0" style={depth ? { x: numPX, y: numPY } : {}}>
+        <span className="absolute right-4 top-1/2 -translate-y-1/2 select-none font-serif text-[7rem] leading-none text-white/[0.07] md:right-12 md:text-[19rem]">
+          {service.number}
+        </span>
+      </motion.div>
 
       {/* Contenido */}
-      <div className="absolute inset-0 z-10 mx-auto flex max-w-2xl flex-col items-center justify-center px-6 text-center">
-        <motion.div className="mb-5 h-px w-16 origin-center bg-vintage-lavender" style={reduce ? {} : { scaleX: lineScaleX }} />
-        <div className="mb-4 text-xs uppercase tracking-[0.35em] text-lavender-veil/70 sm:text-sm">
-          <MaskLine y={subY} reduce={reduce}>{service.number} &mdash; {service.subtitle}</MaskLine>
+      <motion.div className="absolute inset-0 z-10" style={depth ? { x: txtPX, y: txtPY } : {}}>
+        <div className="mx-auto flex h-full max-w-2xl flex-col items-center justify-center px-6 text-center">
+          <motion.div className="mb-5 h-px w-16 origin-center bg-vintage-lavender" style={reduce ? {} : { scaleX: lineScaleX }} />
+          <div className="mb-4 text-xs uppercase tracking-[0.35em] text-lavender-veil/70 sm:text-sm">
+            <MaskLine y={subY} reduce={reduce}>{service.number} &mdash; {service.subtitle}</MaskLine>
+          </div>
+          <h2 className="mb-6 font-serif text-5xl text-white sm:text-6xl md:text-7xl">
+            <MaskLine y={titleY} reduce={reduce}>{service.title}</MaskLine>
+          </h2>
+          <div className="mb-8 max-w-md text-base leading-relaxed text-lavender-veil/85 md:text-lg">
+            <MaskLine y={descY} reduce={reduce}>{service.description}</MaskLine>
+          </div>
+          <motion.div style={reduce ? {} : { opacity: btnOpacity, y: btnY }}>
+            <Link
+              href={`/reservar?servicio=${service.id}`}
+              className="inline-flex min-h-11 items-center rounded-xl border border-white/25 bg-white/10 px-7 py-3.5 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vintage-lavender"
+            >
+              Reservar tratamiento
+            </Link>
+          </motion.div>
         </div>
-        <h2 className="mb-6 font-serif text-5xl text-white sm:text-6xl md:text-7xl">
-          <MaskLine y={titleY} reduce={reduce}>{service.title}</MaskLine>
-        </h2>
-        <div className="mb-8 max-w-md text-base leading-relaxed text-lavender-veil/85 md:text-lg">
-          <MaskLine y={descY} reduce={reduce}>{service.description}</MaskLine>
-        </div>
-        <motion.div style={reduce ? {} : { opacity: btnOpacity, y: btnY }}>
-          <Link
-            href={`/reservar?servicio=${service.id}`}
-            className="inline-flex min-h-11 items-center rounded-xl border border-white/25 bg-white/10 px-7 py-3.5 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vintage-lavender"
-          >
-            Reservar tratamiento
-          </Link>
-        </motion.div>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }
